@@ -31,7 +31,7 @@ public class PagoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pago> buscarPagoId(@PathVariable int id){
+    public ResponseEntity<Pago> buscarPagoId(@PathVariable Long id){
         try {
             Pago pago = pagoServices.buscarPagoId(id);
             return ResponseEntity.ok(pago);
@@ -77,7 +77,7 @@ public class PagoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarPago (@PathVariable int id) {
+    public ResponseEntity<?> eliminarPago (@PathVariable Long id) {
         Boolean validar = pagoServices.borrarPago(id);
         if (validar == false){
             return ResponseEntity.notFound().build();

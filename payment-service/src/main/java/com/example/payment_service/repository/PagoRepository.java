@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.payment_service.model.Pago;
 
 @Repository
-public interface PagoRepository extends JpaRepository<Pago, Integer>{
+public interface PagoRepository extends JpaRepository<Pago, Long>{
     List<Pago> findByIdUsuario(Long idUsuario);
     List<Pago> findByIdEstado(Long idEstado);
     List<Pago> findByIdPlan(Long idPlan);
