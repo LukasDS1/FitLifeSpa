@@ -34,7 +34,7 @@ public class Pago {
     private Date fechaPago;
 
     @Column(nullable = false, unique = true)
-    private int idUsuario;
+    private Long idUsuario;
 
     @Column (nullable = false, unique = true)
     private Long idPlan;

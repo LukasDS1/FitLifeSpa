@@ -28,11 +28,11 @@ public class PagoServices {
         return pagoRepository.findByIdUsuario(id);
     }
 
-    public Pago buscarPagoId(Integer id){
+    public Pago buscarPagoId(Long id){
         return pagoRepository.findById(id).orElse(null);
     }
 
-    public Boolean borrarPago(int id){
+    public Boolean borrarPago(Long id){
         if (pagoRepository.existsById(id)){
             pagoRepository.deleteById(id);
             return true;
