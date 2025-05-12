@@ -2,6 +2,19 @@
     "configurations": [
         {
             "type": "java",
+            "name": "RegisterServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.register_service.RegisterServiceApplication",
+            "projectName": "register-service"
+        },
+        {
+            "type": "java",
+            "name": "LoginServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.login_service.LoginServiceApplication"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-LoginServiceApplication<login-service>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

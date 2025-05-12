@@ -2,9 +2,9 @@ package com.example.register_service.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,11 +27,11 @@ public class Usuario {
     private Long idUsuario;
 
     @Column 
-    (nullable = false,length = 30,unique = true)
-    private String correo;
+    (nullable = false,length = 255,unique = true)
+    private String email;
 
     @Column
-    (nullable = false)
+    (nullable = false,length = 25)
     private String password;    
 
     @Column
@@ -44,7 +44,7 @@ public class Usuario {
 
     @Column
     (nullable = false,length = 50)
-    private String apellifoMaterno;
+    private String apellidoMaterno;
 
     @Column
     (nullable = false,length = 10)
@@ -54,9 +54,9 @@ public class Usuario {
     (nullable = false, length = 12)
     private String rut;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idRol")
-    @JsonIgnoreProperties("users")
+    @JsonIgnoreProperties("usuarios")
     private Rol rol;
 
     

@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.POST,"/api-v1/register/agregarCliente").permitAll()
+            .requestMatchers(HttpMethod.POST,"/api-v1/register/**").permitAll()
             .anyRequest().authenticated()
             )
             .httpBasic(withDefaults());

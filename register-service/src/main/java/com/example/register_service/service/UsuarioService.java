@@ -1,62 +1,52 @@
 package com.example.register_service.service;
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.example.register_service.model.Usuario;
 import com.example.register_service.repository.UsuarioRepository;
-
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+   
+    private final RestTemplate restTemplate;
 
-    private RestTemplate restTemplate;
-    
-    public String encrypt(String password){
+    public String encrypt(String password) {
         return passwordEncoder.encode(password);
 
     }
 
-    public boolean UsuarioExistente(String Email){
-        String url = "";
-        return restTemplate.getForObject(url,boolean.class);
+    public Boolean UsuarioExistente(String email) {
+        String url = " http://localhost:8080/api-v1/exists/"+email;
+        try {
+            Boolean exist = restTemplate.getForObject(url, boolean.class);
+            if (exist == null) {
+                return exist;
+            }
+            return exist;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al verificar existencia del usuario", e);
+        }
     }
+    
 
-    public Usuario createUsuario(String email,Usuario usuario){
-        if(UsuarioExistente(email)){
+    public Usuario createUsuario(Usuario usuario) {
+        if (UsuarioExistente(usuario.getEmail())) {
             throw new IllegalArgumentException("Usuario ya registrado!");
         }
         usuario.setPassword(encrypt(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
-
-     
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-   
-
-
 
 }
