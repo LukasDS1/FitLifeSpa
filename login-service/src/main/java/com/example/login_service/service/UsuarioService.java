@@ -39,5 +39,4 @@ public class UsuarioService {
         return passwordEncoder.encode(rawPasswd);
     }
 
-
 }

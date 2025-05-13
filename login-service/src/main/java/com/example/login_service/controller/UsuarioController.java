@@ -2,19 +2,14 @@ package com.example.login_service.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.login_service.model.Usuario;
 import com.example.login_service.service.UsuarioService;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/api-v1")
@@ -35,14 +30,15 @@ public class UsuarioController {
         } catch (Exception e) {
             throw new RuntimeException("Error al verificar." + e.getMessage());
         }
-        
-
     }
-
+   
     @PostMapping("/login")
-    public ResponseEntity<Usuario> validateUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> validateUsuario(@RequestBody Usuario usuario) {
         try {
-            return ResponseEntity.accepted().body(usuario);
+            if(usuarioService.validateUsuario(usuario.getEmail(), usuario.getPassword())){
+             return ResponseEntity.accepted().body("Usuario Ingresado con éxito: "+usuario.getEmail()+" ¡Bienvenido a FitLife Spa!");
+            }
+            return ResponseEntity.badRequest().body("Error: Email o contraseña incorrectas");
         } catch (Exception e) {
             throw new RuntimeException("Error al autenticar." + e.getMessage());
         }
