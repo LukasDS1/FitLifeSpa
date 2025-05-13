@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import com.example.register_service.model.Usuario;
 import com.example.register_service.service.UsuarioService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,13 +19,12 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/crearUsuario")
-    public ResponseEntity<Usuario> CrearUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> CrearUsuario(@RequestBody Usuario usuario) {
         if (!usuarioService.UsuarioExistente(usuario.getEmail())) {
-           return ResponseEntity.badRequest().build();
+           return ResponseEntity.badRequest().body("Usuario no pudo ser identificado.");
         }   
         usuarioService.createUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario creado correctamente.");
     }
 
 }

@@ -4,7 +4,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +16,9 @@ public class SecurityConfig {
         http // Cross-Site Request Forgery
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET,"/api-v1/**").permitAll()
-                .requestMatchers(HttpMethod.POST,"/api-v1/**").permitAll()
-                .anyRequest().authenticated()
+                //.requestMatchers(HttpMethod.GET,"/api-v1/**").permitAll()
+                //.requestMatchers(HttpMethod.POST,"/api-v1/**").permitAll()
+                .anyRequest().permitAll()
             )
             .httpBasic(withDefaults());
 

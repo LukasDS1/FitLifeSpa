@@ -28,11 +28,11 @@ public class UsuarioService {
     }
 
     public Boolean UsuarioExistente(String email) {
-        String url = " http://localhost:8080/api-v1/exists/"+email;
+        String url = "http://localhost:8081/api-v1/exists?email=" + email;
         try {
             Boolean exist = restTemplate.getForObject(url, boolean.class);
-            if (exist == null) {
-                return exist;
+            if (exist == null || !exist) {
+                return false;
             }
             return exist;
         } catch (Exception e) {
