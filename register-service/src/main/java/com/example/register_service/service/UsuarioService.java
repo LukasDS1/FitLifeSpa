@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+
 import com.example.register_service.model.Usuario;
 import com.example.register_service.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -24,11 +26,10 @@ public class UsuarioService {
 
     public String encrypt(String password) {
         return passwordEncoder.encode(password);
-
     }
 
     public Boolean UsuarioExistente(String email) {
-        String url = " http://localhost:8080/api-v1/exists/"+email;
+        String url = "http://localhost:8081/api-v1/exists?email="+email;
         try {
             Boolean exist = restTemplate.getForObject(url, boolean.class);
             if (exist == null) {
@@ -45,6 +46,9 @@ public class UsuarioService {
         if (UsuarioExistente(usuario.getEmail())) {
             throw new IllegalArgumentException("Usuario ya registrado!");
         }
+        
+
+
         usuario.setPassword(encrypt(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }

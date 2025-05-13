@@ -18,7 +18,7 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     public boolean validateUsuario(String email, String password) {
-    if (!existsByEmail(email)) { // Validar si existe en base de datos.
+    if (!existsByEmail(email)) { 
         return false; 
     }
 

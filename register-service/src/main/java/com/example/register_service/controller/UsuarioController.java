@@ -19,7 +19,7 @@ public class UsuarioController {
 
     @PostMapping("/crearUsuario")
     public ResponseEntity<Usuario> CrearUsuario(@RequestBody Usuario usuario) {
-        if (!usuarioService.UsuarioExistente(usuario.getEmail())) {
+        if (usuarioService.UsuarioExistente(usuario.getEmail())) {
            return ResponseEntity.badRequest().build();
         }   
         usuarioService.createUsuario(usuario);
