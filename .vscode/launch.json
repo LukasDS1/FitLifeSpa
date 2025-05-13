@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "FormServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.form_service.FormServiceApplication",
+            "projectName": "form-service"
+        },
+        {
+            "type": "java",
             "name": "RegisterServiceApplication",
             "request": "launch",
             "mainClass": "com.example.register_service.RegisterServiceApplication",
