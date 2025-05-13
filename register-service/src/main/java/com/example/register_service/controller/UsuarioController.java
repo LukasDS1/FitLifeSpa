@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api-v1/register")
 public class UsuarioController {
-
+    
     @Autowired
     private UsuarioService usuarioService;
 
     @PostMapping("/crearUsuario")
-    public ResponseEntity<?> CrearUsuario(@RequestBody Usuario usuario) {
-        if (!usuarioService.UsuarioExistente(usuario.getEmail())) {
-           return ResponseEntity.badRequest().body("Usuario no pudo ser identificado.");
+    public ResponseEntity<Usuario> CrearUsuario(@RequestBody Usuario usuario) {
+        if (usuarioService.UsuarioExistente(usuario.getEmail())) {
+           return ResponseEntity.badRequest().build();
         }   
         usuarioService.createUsuario(usuario);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario creado correctamente.");
