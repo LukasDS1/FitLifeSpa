@@ -32,15 +32,15 @@ public class UsuarioService {
         String url = "http://localhost:8081/api-v1/exists?email="+email;
         try {
             Boolean exist = restTemplate.getForObject(url, boolean.class);
-            if (exist == null) {
+            if (exist != null) {
                 return exist;
             }
-            return exist;
+            return false;
         } catch (Exception e) {
             throw new RuntimeException("Error al verificar existencia del usuario", e);
         }
     }
-    
+                                   
 
     public Usuario createUsuario(Usuario usuario) {
         if (UsuarioExistente(usuario.getEmail())) {
