@@ -35,16 +35,17 @@ public class Reserva {
     @Column(nullable = false)
     private String descripcion;
     
-    @Column
+    @Column(nullable = true)
     private Long idEntrenador;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idServicio")
+    @JoinColumn(name = "idServicio") // FK de Servicio
     @JsonIgnoreProperties("reservas")
-    private Servicio servicios;
+    private Servicio servicio;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservas")
+    @JoinColumn(name = "idUsuario") // FK de Usuario
+    @JsonIgnoreProperties("reservas")
     private Usuario usuario;
     
 }

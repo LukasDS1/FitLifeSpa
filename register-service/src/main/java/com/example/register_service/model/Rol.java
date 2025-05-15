@@ -31,7 +31,7 @@ public class Rol {
     private String nombre;
 
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
-    @JsonIgnore 
+    @JsonIgnore
     List<Usuario> users;
     
 }
