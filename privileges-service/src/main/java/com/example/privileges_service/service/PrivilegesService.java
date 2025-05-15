@@ -28,36 +28,40 @@ public class PrivilegesService {
     @Autowired
     private ModuloRepository moduloRepository;
 
-    public Privileges agregarPrivilegio(Privileges privi){
+    public Privileges addPrivileges(Privileges privi){
         return privRepository.save(privi);
     }
 
-    public void eliminarPrivilegio(Long id) {
+    public void deletePrivileges(Long id) {
         if (privRepository.existsById(id) == true) {
             privRepository.deleteById(id);
         }
         
     }
-    public List<Privileges> buscarPorRol(Long id){
+    public List<Privileges> findPrivilegesByRol(Long id){
         if (rolRepository.existsById(id)) {
             Rol rol = rolRepository.findById(id).orElseThrow();
             return privRepository.findByRol(rol);
         }
         return null;
     }
-    public List<Privileges> buscarPorModulo(Long id){
+    public List<Privileges> findPrivilegeByEstado(Long id){
         if (estadoRepository.existsById(id)) {
             Estado estado = estadoRepository.findById(id).orElseThrow();
             return privRepository.findByEstado(estado);
         }
         return null;
     }
-    public List<Privileges> buscarPorEstado(Long id){
+    public List<Privileges> findPrivilegesByModulo(Long id){
         if (moduloRepository.existsById(id)) {
             Modulo modulo = moduloRepository.findById(id).orElseThrow();
             return privRepository.findByModulo(modulo);
         }
         return null;
+    }
+
+    public List<Privileges> allPrivileges(){
+        return privRepository.findAll();
     }
 
 }
