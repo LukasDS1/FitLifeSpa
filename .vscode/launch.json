@@ -12,7 +12,8 @@
             "name": "RegisterServiceApplication",
             "request": "launch",
             "mainClass": "com.example.register_service.RegisterServiceApplication",
-            "projectName": "register-service"
+            "projectName": "register-service",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -27,6 +28,17 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.login_service.LoginServiceApplication",
             "projectName": "login-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UsermanagementServiceApplication<usermanagement-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.usermanagement_service.UsermanagementServiceApplication",
+            "projectName": "usermanagement-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

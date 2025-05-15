@@ -2,57 +2,53 @@ package com.example.reserva_service.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.reserva_service.model.Reserva;
 import com.example.reserva_service.model.Usuario;
 import com.example.reserva_service.repository.ReservaRepository;
+import com.example.reserva_service.repository.ServicioRepository;
+import com.example.reserva_service.repository.UsuarioRepository;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class ReservaService {
+    @Autowired
+    private ReservaRepository reservaRepository;
 
-    private final ReservaRepository reservaRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    // TODO: Cambiar función de login para que devuelva el Object<Usuario>.
-    //public Usuario getByIdUsuario(Long)
+    @Autowired
+    private ServicioRepository servicioRepository;
 
-    public List<Reserva> findReservas() {
+    public List<Reserva> listarReservas() {
         return reservaRepository.findAll();
     }
 
-    public Boolean addService(Reserva reserva) {
-        if (reserva != null) {
-            reservaRepository.save(reserva);
-            return true;
-        }
-        return false;
+    public Reserva buscarPorId(Long id){
+        return reservaRepository.findById(id).orElseThrow();
     }
 
-    public Boolean deleteService(Long reservaId) {
-        if (reservaId != null) {
-            reservaRepository.deleteById(reservaId);
-            return true;
+    public Reserva agregarReserva(Reserva reserva, Long idUsuario, Long idSercivio){
+        if (usuarioRepository.existsById(idUsuario) == false){
+            return null;
         }
-        return false;
+        if (servicioRepository.existsById(idSercivio)){
+            return null;
+        }
+        return reservaRepository.save(reserva);
     }
 
-    public Boolean updateService(Reserva reserva) {
-        if (reserva == null) {
-            return false;
-        }
+    public void borrarReserva(Long id) {
+        reservaRepository.deleteById(id);
+    }
 
-        Reserva reserva1 = new Reserva();
-        reserva1.setIdReserva(reserva.getIdReserva());
-        reserva1.setFechaReserva(reserva.getFechaReserva());
-        reserva1.setFechaContrato(reserva.getFechaContrato());
-        reserva1.setDescripcion(reserva.getDescripcion());
-        reserva1.setIdEntrenador(reserva.getIdEntrenador());
-
-        reservaRepository.save(reserva1);
-        return true;
+    public List<Reserva> listarPorIdUser(Usuario usuario){
+        return reservaRepository.findByUsuario(usuario);
     }
 
 }
