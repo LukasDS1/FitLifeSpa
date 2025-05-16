@@ -32,11 +32,13 @@ public class PrivilegesService {
         return privRepository.save(privi);
     }
 
-    public void deletePrivileges(Long id) {
-        if (privRepository.existsById(id) == true) {
+    public Boolean deletePrivileges(Long id) {
+        if (privRepository.existsById(id)) {
             privRepository.deleteById(id);
+            return true;
         }
-        
+        return false;
+         
     }
     public List<Privileges> findPrivilegesByRol(Long id){
         if (rolRepository.existsById(id)) {
@@ -64,4 +66,7 @@ public class PrivilegesService {
         return privRepository.findAll();
     }
 
+    public Privileges findPrivById(Long id){
+        return privRepository.findById(id).orElseThrow();
+    }
 }

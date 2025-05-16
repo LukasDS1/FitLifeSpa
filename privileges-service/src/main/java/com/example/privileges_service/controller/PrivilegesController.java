@@ -73,12 +73,21 @@ public class PrivilegesController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePrivilege(@PathVariable Long id){
-        try {
-            privilegesService.deletePrivileges(id);
+        if (privilegesService.deletePrivileges(id)){
             return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Este objeto no existe");
+        
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Privileges> findbyIdprivilege(@PathVariable Long id) {
+        try {
+            Privileges priv = privilegesService.findPrivById(id);
+            return ResponseEntity.ok(priv);
         } catch (Exception e) {
             // TODO: handle exception
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este objeto no existe");
+            return ResponseEntity.notFound().build();
         }
     }
 }

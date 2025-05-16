@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PrivilegesServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.privileges_service.PrivilegesServiceApplication",
+            "projectName": "privileges-service"
+        },
+        {
+            "type": "java",
             "name": "FormServiceApplication",
             "request": "launch",
             "mainClass": "com.example.form_service.FormServiceApplication",
