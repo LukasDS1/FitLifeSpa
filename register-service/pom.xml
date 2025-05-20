@@ -86,8 +86,6 @@
 			<scope>runtime</scope>
 		</dependency>
 	
-
-		
 	</dependencies>
 
 	<build>
@@ -121,4 +119,18 @@
 
 
 	
+
+	
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2024.0.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
