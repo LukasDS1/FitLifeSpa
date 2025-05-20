@@ -8,5 +8,5 @@ import com.example.register_service.model.Usuario;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
-    Optional <Usuario> findByEmail (String email);
+    Optional<Usuario> findByEmail(String email);
 }

@@ -43,7 +43,7 @@ public class Usuario {
     private String apellidoPaterno;
 
     @Column
-    (nullable = false,length = 50)
+    (nullable = true,length = 50)
     private String apellidoMaterno;
 
     @Column

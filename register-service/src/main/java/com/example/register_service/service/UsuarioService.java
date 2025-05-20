@@ -1,12 +1,11 @@
 package com.example.register_service.service;
 
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-
 import com.example.register_service.model.Usuario;
 import com.example.register_service.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -17,40 +16,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-   
-    private final RestTemplate restTemplate;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     public String encrypt(String password) {
         return passwordEncoder.encode(password);
     }
 
-    public Boolean UsuarioExistente(String email) {
-        String url = "http://localhost:8081/api-v1/exists?email=" + email;
-        try {
-            Boolean exist = restTemplate.getForObject(url, boolean.class);
-            if (exist == null || !exist) {
-                return false;
-            }
-            return exist;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al verificar existencia del usuario", e);
+    public Boolean existsByEmail(String email) {
+       Optional<Usuario> existe = usuarioRepository.findByEmail(email);
+        if(existe.isPresent()) {
+            return true;
         }
+        return false;
+
     }
+
+
+    public Usuario createUsuario(Usuario usuario){
+        Usuario usuario1 = new Usuario();
+        usuario1.setEmail(usuario1.getEmail());
+        usuario1.setNombre(usuario1.getNombre());
+        usuario1.setApellidoPaterno(usuario1.getApellidoPaterno());
+        usuario1.setApellidoMaterno(usuario1.getApellidoMaterno());
+        usuario1.setGenero(usuario1.getGenero());
+        usuario1.setRut(usuario1.getRut());
+         usuario1.getRol();
+        usuario1.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        return usuarioRepository.save(usuario1);
+    
+    }
+
+    
     
 
-    public Usuario createUsuario(Usuario usuario) {
-        if (UsuarioExistente(usuario.getEmail())) {
-            throw new IllegalArgumentException("Usuario ya registrado!");
-        }
-        
-
-
-        usuario.setPassword(encrypt(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
-    }
+   
 
 }

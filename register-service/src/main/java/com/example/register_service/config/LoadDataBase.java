@@ -1,4 +1,4 @@
-package com.example.login_service.config;
+package com.example.register_service.config;
 
 import java.util.ArrayList;
 
@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.login_service.model.Rol;
-import com.example.login_service.model.Usuario;
-import com.example.login_service.repository.RolRepository;
-import com.example.login_service.repository.UsuarioRepository;
+import com.example.register_service.model.Rol;
+import com.example.register_service.model.Usuario;
+import com.example.register_service.repository.RolRepository;
+import com.example.register_service.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,15 +21,15 @@ public class LoadDataBase {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    CommandLineRunner initDataBase(RolRepository rolRepository, UsuarioRepository usuarioRepository) {
-        return args -> {
-            if (rolRepository.count() == 0 && usuarioRepository.count() == 0) {
-                Rol admin = new Rol(null,"Administrador", new ArrayList<>());
-                //admin.setNombre("Administrador");
+    CommandLineRunner initDatabase(RolRepository rolRepository, UsuarioRepository usuarioRepository){
+        return args->{
+            if(rolRepository.count() == 0 && usuarioRepository.count() == 0 ){
+                Rol admin = new Rol(null,"Admin",new ArrayList<>());
                 rolRepository.save(admin);
-
-                Rol cliente = new Rol(null, "Cliente", new ArrayList<>());
+                Rol cliente = new Rol(null,"Cliente",new ArrayList<>());
                 rolRepository.save(cliente);
+                Rol Soporte = new Rol(null,"Soporte",new ArrayList<>());
+                rolRepository.save(Soporte);
 
                 Usuario usuario1 = new Usuario();
                 usuario1.setEmail("nuevo@ejemplo.com");
@@ -41,9 +41,11 @@ public class LoadDataBase {
                 usuario1.setRut("12345678-9");
                 usuario1.setRol(cliente);
                 usuarioRepository.save(usuario1);
-            } else {
+            }else{
                 System.out.println("Datos ya existen. No se cargaron.");
             }
         };
     }
+    
+
 }
