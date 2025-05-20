@@ -14,8 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.privileges_service.model.Estado;
+import com.example.privileges_service.model.Modulo;
 import com.example.privileges_service.model.Privileges;
+import com.example.privileges_service.model.Rol;
+import com.example.privileges_service.service.EstadoService;
+import com.example.privileges_service.service.ModuloService;
 import com.example.privileges_service.service.PrivilegesService;
+import com.example.privileges_service.service.RolService;
 
 @RestController
 @RequestMapping("api/v1/privilegios")
@@ -23,6 +29,15 @@ import com.example.privileges_service.service.PrivilegesService;
 public class PrivilegesController {
     @Autowired
     private PrivilegesService privilegesService;
+
+    @Autowired
+    private RolService rolService;
+
+    @Autowired
+    private EstadoService estadoService;
+
+    @Autowired
+    private ModuloService moduloService;
 
     @GetMapping("/total")
     public ResponseEntity<List<Privileges>> listPrivileges(){
@@ -88,6 +103,66 @@ public class PrivilegesController {
         } catch (Exception e) {
             // TODO: handle exception
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/findRol/{id}")
+    public ResponseEntity<Rol> findRol(@PathVariable Long id){
+        Rol rol = rolService.validarRol(id);
+        if (rol != null) {
+            return ResponseEntity.ok(rol);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/addRol")
+    public ResponseEntity<Rol> addRol(@RequestBody Rol rol){
+        try {
+            rolService.AgregarRol(rol);
+            return ResponseEntity.status(HttpStatus.CREATED).body(rol);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/findEstado/{id}")
+    public ResponseEntity<Estado> findEstado(@PathVariable Long id){
+        Estado estado = estadoService.validarEstado(id);
+        if (estado != null) {
+            return ResponseEntity.ok(estado);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/addEstado")
+    public ResponseEntity<Estado> addEstado(@RequestBody Estado estado){
+        try {
+            estadoService.agregarEstado(estado);
+            return ResponseEntity.status(HttpStatus.CREATED).body(estado);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/findModulo/{id}")
+    public ResponseEntity<Modulo> findModulo(@PathVariable Long id){
+        Modulo modulo = moduloService.validarModulo(id);
+        if (modulo != null) {
+            return ResponseEntity.ok(modulo);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/addModulo")
+    public ResponseEntity<Modulo> addModulo(@RequestBody Modulo modulo){
+        try {
+            moduloService.agregarModulo(modulo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(modulo);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.badRequest().build();
         }
     }
 }
