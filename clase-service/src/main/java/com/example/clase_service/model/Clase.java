@@ -2,6 +2,7 @@ package com.example.clase_service.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -30,13 +31,14 @@ public class Clase {
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(nullable = false)
     private Date fechaClase;
 
     @Column(nullable = false)
     private String descripcion;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "idServicio")
     @JsonIgnoreProperties("clases")
     private Servicio servicio;

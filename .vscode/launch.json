@@ -48,6 +48,16 @@
             "projectName": "usermanagement-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ClaseServiceApplication<clase-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.clase_service.ClaseServiceApplication",
+            "projectName": "clase-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
