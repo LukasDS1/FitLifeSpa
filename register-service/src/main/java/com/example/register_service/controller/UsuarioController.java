@@ -3,7 +3,6 @@ package com.example.register_service.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import com.example.register_service.model.Usuario;
 import com.example.register_service.service.UsuarioService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,17 +21,17 @@ public class UsuarioController {
 
     @PostMapping("/crearUsuario")
     public ResponseEntity<?> CrearUsuario(@RequestBody Usuario usuario) {
-        if (usuarioService.existsByEmail(usuario.getEmail())) {
-            return ResponseEntity.badRequest().build();
+        if (usuarioService.existsByMail(usuario.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe");
         }
-            usuarioService.createUsuario(usuario);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario creado correctamente.");
+        usuarioService.createUsuario(usuario);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(usuario);
     }
 
     @GetMapping("/exists")
     public ResponseEntity<?> existsByMail(@RequestParam String email) {
         try {
-            Boolean usuario1 = usuarioService.existsByEmail(email);
+            Boolean usuario1 = usuarioService.existsByMail(email);
             if (usuario1) {
                 return ResponseEntity.ok(false);
             }
