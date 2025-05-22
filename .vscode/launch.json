@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MembresiaServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.membresia_service.MembresiaServiceApplication",
+            "projectName": "membresia-service"
+        },
+        {
+            "type": "java",
             "name": "PrivilegesServiceApplication",
             "request": "launch",
             "mainClass": "com.example.privileges_service.PrivilegesServiceApplication",
@@ -46,6 +53,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.usermanagement_service.UsermanagementServiceApplication",
             "projectName": "usermanagement-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ClaseServiceApplication<clase-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.clase_service.ClaseServiceApplication",
+            "projectName": "clase-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         },

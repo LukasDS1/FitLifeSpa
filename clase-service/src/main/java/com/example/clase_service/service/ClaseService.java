@@ -7,16 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.clase_service.model.Clase;
 import com.example.clase_service.repository.ClaseRepository;
-
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClaseService {
 
     private final ClaseRepository claseRepository;
 
-    public List<Clase> getClases() {
+    public List<Clase> getAllClases() {
         return claseRepository.findAll();
     }
 
@@ -36,16 +37,20 @@ public class ClaseService {
         claseRepository.deleteById(idClase);
         return true;
     }
-
-    // TODO: modificar para actualizar atributos por separado
-    /**
-     * @return object Clase if it's present
-     */
+    
     public Clase updateClase(Long idClase, Clase clase) {
         Optional<Clase> clase1 = claseRepository.findById(idClase);
         if (clase1.isEmpty()) {
-            return clase1.get();
+            throw new RuntimeException("Clase con ID: "+idClase+" No encontrada!"); 
+        } else {
+            Clase clase2 = clase1.get();
+            clase2.getIdClase();
+            clase2.setNombre(clase.getNombre());
+            clase2.setDescripcion(clase.getDescripcion());
+            clase2.setFechaClase(clase.getFechaClase());
+            clase2.getServicio();
+            return claseRepository.save(clase2);
         }
-        return claseRepository.save(clase);
+
     }
 }

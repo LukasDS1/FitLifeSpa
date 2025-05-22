@@ -47,10 +47,7 @@ public class UsuarioService {
         
         return false;
         }
-        
 
-
-        
     public Boolean existsByEmail(String email) {
         return usuarioRepository.findByEmail(email).isPresent(); 
     }
