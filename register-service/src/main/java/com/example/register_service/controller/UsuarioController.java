@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import com.example.register_service.model.Usuario;
 import com.example.register_service.service.UsuarioService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,15 @@ public class UsuarioController {
         } catch (Exception e) {
             throw new RuntimeException("Error al verificar." + e.getMessage());
         }
+    }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<?> existsById (@PathVariable Long id){
+        Usuario usuario1 = usuarioService.buscarPorId(id);
+        if (usuario1 == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuario1);
     }
 
 }

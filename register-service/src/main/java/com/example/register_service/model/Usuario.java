@@ -54,11 +54,8 @@ public class Usuario {
     (nullable = false, length = 12)
     private String rut;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idRol")
     @JsonIgnoreProperties("usuarios")
     private Rol rol;
-
-    
-    
 }

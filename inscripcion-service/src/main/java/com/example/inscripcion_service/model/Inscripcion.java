@@ -39,4 +39,8 @@ public class Inscripcion {
     @JoinColumn(name = "idEstado")
     @JsonIgnoreProperties("inscripcion")
     private Estado estado;
+
+    @Column(nullable = false)
+    private Long idUsuario;
+
 }
