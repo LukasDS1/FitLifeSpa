@@ -48,6 +48,16 @@
             "projectName": "usermanagement-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-GymservicesServiceApplication<gymservices-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.gymservices_service.GymservicesServiceApplication",
+            "projectName": "gymservices-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
