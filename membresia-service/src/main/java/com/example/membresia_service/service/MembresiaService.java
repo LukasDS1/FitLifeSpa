@@ -23,6 +23,11 @@ public class MembresiaService {
         return membresiaRepository.findAll();
     }
 
+    public  Optional<Membresia> findByid(Long idMembresia){
+        return membresiaRepository.findById(idMembresia);
+
+    }
+
     public Optional<Membresia> getMembresiaById (Long idMembresia){
         return membresiaRepository.findById(idMembresia);
     }
