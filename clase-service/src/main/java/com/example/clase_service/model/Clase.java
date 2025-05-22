@@ -31,7 +31,7 @@ public class Clase {
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column(nullable = false)
     private Date fechaClase;
 

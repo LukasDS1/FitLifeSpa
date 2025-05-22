@@ -16,7 +16,6 @@ public class ServicioService {
 
     private final ServicioRepository servicioRepository;
 
-
     public List<Servicio> getAllService(){
         return servicioRepository.findAll();
     }
