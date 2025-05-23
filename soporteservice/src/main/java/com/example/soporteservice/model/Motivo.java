@@ -2,10 +2,8 @@ package com.example.soporteservice.model;
 
 
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +21,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Motivo {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long idMotivo;
 
-    @JsonProperty("descripcion")
     @Column
     (nullable = false,length = 200)
     private String Descripcion;

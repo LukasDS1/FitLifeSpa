@@ -1,10 +1,12 @@
 package com.example.soporteservice.model;
 
+
+
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,11 +25,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"historial", "motivo", "estado", "usuario", "hibernateLazyInitializer", "handler"}) //TODO:REVISAR
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 
 public class Historial {
-    @Id
+    @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHistorial;
 
@@ -41,12 +42,12 @@ public class Historial {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column
-    (nullable = false)
-    private Date fechamensaje;
+    (nullable = false) 
+    private Date fechaMensaje;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTicket")
-    @JsonIgnoreProperties("historial")
+    @JsonBackReference
     private Ticket ticket;
 
 

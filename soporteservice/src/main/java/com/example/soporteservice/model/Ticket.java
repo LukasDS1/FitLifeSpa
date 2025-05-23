@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,19 +43,22 @@ public class Ticket {
     (nullable = true )
     private Long idSoporte;
 
-    @OneToMany(mappedBy = "ticket",cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Historial>historial;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idMotivo")
+    @JoinColumn(nullable = false) 
+    @JsonIgnoreProperties({"ticket", "hibernateLazyInitializer", "handler"})
     private Motivo motivo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEstado")
+    @JoinColumn(name = "idEstado", nullable = false)
+    @JsonIgnoreProperties({"ticket", "hibernateLazyInitializer", "handler"})
     private Estado estado;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idUsuario")
+    @JoinColumn(name="idUsuario",nullable = false)
+    @JsonIgnoreProperties({"ticket", "rol", "hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 }

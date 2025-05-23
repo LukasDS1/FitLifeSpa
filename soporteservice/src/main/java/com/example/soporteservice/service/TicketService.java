@@ -44,7 +44,20 @@ public class TicketService {
         throw new RuntimeException("Ticket con ID: "+ticket.getIdTicket()+" no encontrado!");
     }
 
+    public Ticket getTicketbyId2(Long idTicket){
+        Ticket ticket = ticketRepository.findById(idTicket).orElseThrow();
+        ticket.getMotivo().getIdMotivo();
+        ticket.getEstado().getIdEstado();
+        ticket.getUsuario().getIdUsuario();
+        ticket.getHistorial().size();
+
+        return ticket;
+    }
     
+
+    
+
+ 
 
 
 
