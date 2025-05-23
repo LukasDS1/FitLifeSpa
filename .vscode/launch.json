@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SoporteserviceApplication",
+            "request": "launch",
+            "mainClass": "com.example.soporteservice.SoporteserviceApplication",
+            "projectName": "soporteservice"
+        },
+        {
+            "type": "java",
             "name": "MembresiaServiceApplication",
             "request": "launch",
             "mainClass": "com.example.membresia_service.MembresiaServiceApplication",
