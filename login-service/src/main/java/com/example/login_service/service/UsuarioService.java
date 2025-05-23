@@ -19,28 +19,32 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
 
-    //TODO:BIEN
     public Usuario userExists(String email) {
-        String url = "http://localhost:8082/api-v1/register/exists?email=" + email;
+        Usuario usuarioRequest = new Usuario();
+        usuarioRequest.setEmail(email); // define la request que se va a enviar como pregunta a register/exists
+        
+        String url_register_service = "http://localhost:8082/api-v1/register/exists"; // url que devuelve un objeto Usuario
+        
         try {
-            Usuario exist = restTemplate.getForObject(url, Usuario.class);
-            if (exist != null) {
-                return exist;
+            Usuario usuarioResponse = restTemplate.postForObject(url_register_service, usuarioRequest, Usuario.class);
+            if (usuarioResponse != null) {
+                return usuarioResponse;
             }
             return null;
+
         } catch (Exception e) {
-            throw new RuntimeException("Error al verificar existencia del usuario", e);
+            throw new RuntimeException("Error al verificar existencia del usuario" + e.getMessage());
         }
     }
 
     public boolean validateUser(String email, String password) {
-        Usuario usuario11 = userExists(email);
-        if (usuario11 == null) {
+        Usuario usuario1 = userExists(email);
+        if (usuario1 == null) {
             return false;
 
         }
         
-        if (passwordEncoder.matches(email, password)) {
+        if (passwordEncoder.matches(password, usuario1.getPassword())) {
         return true;
         
         }

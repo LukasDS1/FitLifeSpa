@@ -48,9 +48,9 @@ public class InscripcionService {
 
 
     public Inscripcion agragarInscripcion(Inscripcion insc) {
-        String URL_CLIENTE = "http://localhost:8082/api-v1/register/exists/{id}";
+        String url_register_service = "http://localhost:8082/api-v1/register/exists/{id}";
         try {
-            Map cliente = restTemplate.getForObject(URL_CLIENTE, Map.class, insc.getIdUsuario());
+            Map cliente = restTemplate.getForObject(url_register_service, Map.class, insc.getIdUsuario());
 
             if (cliente == null || cliente.isEmpty()) {
             throw new RuntimeException("El usuario no existe");
