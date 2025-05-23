@@ -25,17 +25,16 @@ public class UsuarioService {
         return passwordEncoder.encode(password);
     }
 
-    public Boolean existsByMail(String email) {
-       Usuario user = usuarioRepository.findByEmail(email);
-        if(user != null) {
-            return true;
+    public Usuario getByMail(String email) {
+       Usuario usuario = usuarioRepository.findByEmail(email);
+        if(usuario != null) {
+            return usuario;
         }
-        return false;
-
+        return null;
     }
     
 
-    public Usuario createUsuario(Usuario usuario){
+    public Usuario saveUsuario(Usuario usuario){
         Usuario usuario1 = new Usuario();
         usuario1.setEmail(usuario.getEmail());
         usuario1.setNombre(usuario.getNombre());
@@ -46,6 +45,11 @@ public class UsuarioService {
         usuario1.setRol(usuario.getRol());
         usuario1.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario1);
+    }
+
+    public Usuario buscarPorId(Long id){
+        return usuarioRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
     }
 
     

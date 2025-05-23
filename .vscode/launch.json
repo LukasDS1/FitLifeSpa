@@ -34,7 +34,7 @@
             "request": "launch",
             "mainClass": "com.example.register_service.RegisterServiceApplication",
             "projectName": "register-service",
-            "vmArgs": " -Dcom.sun.management.jmxremote"
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52280 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=register-service"
         },
         {
             "type": "java",
@@ -80,6 +80,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.gymservices_service.GymservicesServiceApplication",
             "projectName": "gymservices-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-InscripcionServiceApplication<inscripcion-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.inscripcion_service.InscripcionServiceApplication",
+            "projectName": "inscripcion-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

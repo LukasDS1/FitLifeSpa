@@ -12,7 +12,7 @@ import jakarta.transaction.Transactional;
 public class EstadoService {
     @Autowired
     private EstadoRepository estadoRepo;
-
+    
     public Boolean validaEstado(Long id){
         return estadoRepo.existsById(id);
     }
