@@ -4,12 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.reserva_service.model.Reserva;
-import com.example.reserva_service.model.Usuario;
+
 
 import java.util.List;
 
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long>{
-    List<Reserva> findByUsuario(Usuario usuario);
+    List<Reserva> findByIdUsuario(Long idUsuario);
 }

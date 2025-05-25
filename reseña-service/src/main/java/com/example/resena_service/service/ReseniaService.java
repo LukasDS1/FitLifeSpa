@@ -33,6 +33,7 @@ public class ReseniaService {
     public Boolean validarServicio (Resenia resenia){
         String url = "http://localhost:8085/api-v1/service/exists/{id}";
         try {
+            @SuppressWarnings("rawtypes")
             Map objeto = cliente.getForObject(url, Map.class, resenia.getIdServicio());
 
             if (objeto == null || objeto.isEmpty()) {
@@ -48,6 +49,7 @@ public class ReseniaService {
     public Boolean validarUsuario(Resenia resenia){
         String url = "http://localhost:8082/api-v1/register/exists/{id}";
         try {
+            @SuppressWarnings("rawtypes")
             Map objeto = cliente.getForObject(url, Map.class, resenia.getIdUsuario());
 
             if (objeto == null || objeto.isEmpty()) {

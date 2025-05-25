@@ -92,6 +92,16 @@
             "projectName": "inscripcion-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ReservaServiceApplication<reserva-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.reserva_service.ReservaServiceApplication",
+            "projectName": "reserva-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
