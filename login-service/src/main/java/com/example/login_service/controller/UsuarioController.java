@@ -20,7 +20,8 @@ public class UsuarioController {
     public ResponseEntity<?> validateUsuario(@RequestBody Usuario usuario) {
         try {
             if(usuarioService.validateUser(usuario.getEmail(), usuario.getPassword())){
-             return ResponseEntity.accepted().body("Usuario Ingresado con éxito: "+usuario.getEmail()+" ¡Bienvenido a FitLife Spa!");
+            return ResponseEntity.accepted().body("Usuario Ingresado con éxito: "+ usuario.getEmail()+ " ¡Bienvenido a FitLife Spa!");
+
             }
             return ResponseEntity.badRequest().body("Error: Email o contraseña incorrectas");
         } catch (Exception e) {
