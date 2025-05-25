@@ -24,23 +24,76 @@ public class LoadDataBase {
     CommandLineRunner initDatabase(RolRepository rolRepository, UsuarioRepository usuarioRepository){
         return args->{
             if(rolRepository.count() == 0 && usuarioRepository.count() == 0 ){
-                Rol admin = new Rol(null,"Admin",new ArrayList<>());
+                Rol admin = new Rol(null,"Administrador",new ArrayList<>());
                 rolRepository.save(admin);
-                Rol cliente = new Rol(null,"Cliente",new ArrayList<>());
-                rolRepository.save(cliente);
-                Rol Soporte = new Rol(null,"Soporte",new ArrayList<>());
-                rolRepository.save(Soporte);
 
-                Usuario usuario1 = new Usuario();
-                usuario1.setEmail("nuevo@ejemplo.com");
-                usuario1.setPassword(passwordEncoder.encode("claveSegura123"));
-                usuario1.setNombre("Carlos");
-                usuario1.setApellidoPaterno("Ramírez");
-                usuario1.setApellidoMaterno("Díaz");
-                usuario1.setGenero("Masculino");
-                usuario1.setRut("12345678-9");
-                usuario1.setRol(cliente);
-                usuarioRepository.save(usuario1);
+                Rol coordi = new Rol(null, "Coordinador", new ArrayList<>());
+                rolRepository.save(coordi);
+
+                Rol ent = new Rol(null, "Entrenador", new ArrayList<>());
+                rolRepository.save(ent);
+
+                Rol sop = new Rol(null,"Soporte",new ArrayList<>());
+                rolRepository.save(sop);
+
+                Rol cli = new Rol(null,"Cliente",new ArrayList<>());
+                rolRepository.save(cli);
+
+                Usuario administrador = new Usuario(
+                null,
+                "administrador@gmail.com",
+                passwordEncoder.encode("1234"),
+                "admin",
+                "appa1",
+                "apma1",
+                "Masculino",
+                "12345678-1", admin);
+                usuarioRepository.save(administrador);
+
+                Usuario coordinador = new Usuario(
+                null, 
+                "coordinador@gmail.com", 
+                passwordEncoder.encode("4123"), 
+                "coordinador", 
+                "appa2", 
+                "apma2", 
+                "Femenino", 
+                "12344567-2", coordi);
+                usuarioRepository.save(coordinador);
+
+                Usuario entrenador = new Usuario(
+                null, 
+                "entrenador@gmail.com", 
+                passwordEncoder.encode("3412"), 
+                "entrenador", 
+                "appa3", 
+                "apma3", 
+                "Masculino", 
+                "12345678-9", ent);
+                usuarioRepository.save(entrenador);
+
+                Usuario soporte = new Usuario(
+                null, 
+                "soporte@gmail.com", 
+                passwordEncoder.encode("2341"), 
+                "soporte", 
+                "appa4", 
+                "apma4", 
+                "Femenino", 
+                "12345234-1", sop);
+                usuarioRepository.save(soporte);
+
+                Usuario user = new Usuario(
+                null, 
+                "usuario@gmail.com", 
+                passwordEncoder.encode("4321"), 
+                "usuario", 
+                "appa5", 
+                "apma5", 
+                "Masculino", 
+                "12349865-1", cli);
+                usuarioRepository.save(user);
+
             }else{
                 System.out.println("Datos ya existen. No se cargaron.");
             }
