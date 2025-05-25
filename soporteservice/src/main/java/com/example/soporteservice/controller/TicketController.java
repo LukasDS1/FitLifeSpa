@@ -24,6 +24,7 @@ public class TicketController {
 
    
     
+
     @PostMapping("/estado")
     public ResponseEntity<String> getEstadoTicket(@RequestBody Ticket ticket){
         Optional<Ticket> exist = ticketService.getById(ticket.getIdTicket());   

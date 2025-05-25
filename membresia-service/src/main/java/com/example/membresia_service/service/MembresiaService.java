@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import com.example.membresia_service.model.Membresia;
+import com.example.membresia_service.model.Usuario;
 import com.example.membresia_service.repository.MembresiaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,7 @@ public class MembresiaService {
 
 
     private final MembresiaRepository membresiaRepository;
+    private final RestTemplate restTemplate;
 
 
     
@@ -33,7 +38,10 @@ public class MembresiaService {
     }
     
     public Membresia saveMembresia(Membresia membresia){
-        return membresiaRepository.save(membresia);
+        if(exist(membresia.getUsuario().getEmail()) != null){
+            return membresiaRepository.save(membresia);    
+        }
+        throw new RuntimeException("Usuario no encontrado");
     }
 
 
@@ -46,15 +54,41 @@ public class MembresiaService {
                 membresiaRepository.deleteById(idMembresia);
                 return true;
             }
-
         } catch (Exception e) {
             throw new RuntimeException("");
         }
 
     }
 
+    public Usuario exist(String email) {
+        Usuario usuarioRequest = new Usuario();
+        usuarioRequest.setEmail(email);
 
-     /** Hay que revisar */
+        String url_register_service = "http://localhost:8082/api-v1/register/exists";
+
+        try {
+            Usuario Usuarioexist = restTemplate.postForObject(url_register_service, usuarioRequest,Usuario.class);
+              System.out.println("Usuario encontrado: " + Usuarioexist);
+            return Usuarioexist;
+        } catch (HttpClientErrorException e) {
+        System.out.println("Error HTTP: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+        return null;
+        } catch (Exception e){
+        throw new RuntimeException("Error al verificar existencia del usuario"+ e.getMessage());
+    }
+
+    }
+
+    public boolean validateUser(String email){
+        if(email == null || email.trim().isEmpty()){
+            return false;
+        }
+        Usuario usuario1 = exist(email);
+        return usuario1 != null;
+    }
+
+
+    
 
     public Membresia updatMembresia (Membresia membresia){
         Optional<Membresia> exist = membresiaRepository.findById(membresia.getIdMembresia());
@@ -72,20 +106,7 @@ public class MembresiaService {
     }
 
     
-    /**   metodo opcional
-    public Boolean deletemembresia(Long idMembresia){
-        try {
-            if(membresiaRepository.existsById(idMembresia)){
-                membresiaRepository.deleteById(idMembresia);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            throw new RuntimeException("Error Membresia con ID "+idMembresia+" No encontrado");
-        }
-    } */
-
-
+  
 
 }
 

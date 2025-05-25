@@ -3,9 +3,11 @@ package com.example.soporteservice.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import com.example.soporteservice.model.Estado;
 import com.example.soporteservice.model.Ticket;
-import com.example.soporteservice.repository.EstadoRepository;
+import com.example.soporteservice.model.Usuario;
 import com.example.soporteservice.repository.TicketRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,42 +18,80 @@ import lombok.RequiredArgsConstructor;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final EstadoRepository estadoRepository;
+    private final RestTemplate restTemplate;
 
-
-    public List<Ticket> getAllTicket(){
+    public List<Ticket> getAllTicket() {
         return ticketRepository.findAll();
     }
 
-    public Optional<Ticket> getById(Long idTicket){
+    public Optional<Ticket> getById(Long idTicket) {
         return ticketRepository.findById(idTicket);
     }
 
-    public Ticket createTicket(Ticket ticket){
-        if(ticket.getEstado() == null){
-            Estado estado = estadoRepository.findById(1L).orElseThrow(()-> new RuntimeException("Estado no encontrado"));
-            ticket.setEstado(estado);
+    public Ticket createTicket(Ticket ticket) {
+        if (existEstado(ticket.getEstado().getIdEstado()) == null) {
+            if (exist(ticket.getUsuario().getEmail()) != null) {
+                Estado estado = ticket.getEstado();
+                ticket.setEstado(estado);
+                return ticketRepository.save(ticket);
+            }
         }
-        return ticketRepository.save(ticket);
+        throw new RuntimeException("Estado o email no encontrado(s)");
     }
 
-    public Ticket updateStateTicket(Ticket ticket){
-        if(ticketRepository.existsById(ticket.getIdTicket())){
-            Ticket ticket2 = ticketRepository.findById(ticket.getIdTicket()).orElseThrow(()-> new RuntimeException(""));
+    public Ticket updateStateTicket(Ticket ticket) {
+        if (ticketRepository.existsById(ticket.getIdTicket())) {
+            Ticket ticket2 = ticketRepository.findById(ticket.getIdTicket())
+                    .orElseThrow(() -> new RuntimeException(""));
             ticket2.setEstado(ticket.getEstado());
             return ticketRepository.save(ticket2);
         }
-        throw new RuntimeException("Ticket con ID: "+ticket.getIdTicket()+" no encontrado!");
+        throw new RuntimeException("Ticket con ID: " + ticket.getIdTicket() + " no encontrado!");
     }
 
-    public Ticket getTicketbyId2(Long idTicket){
+    public Ticket getTicketbyId2(Long idTicket) {
         Ticket ticket = ticketRepository.findById(idTicket).orElseThrow();
         ticket.getMotivo().getIdMotivo();
         ticket.getEstado().getIdEstado();
         ticket.getUsuario().getIdUsuario();
         ticket.getHistorial().size();
-
         return ticket;
+    }
+
+    public Usuario exist(String email) {
+        Usuario usuarioRequest = new Usuario();
+        usuarioRequest.setEmail(email);
+
+        String url_register_service = "http://localhost:8082/api-v1/register/exists";
+
+        try {
+            Usuario Usuarioexist = restTemplate.postForObject(url_register_service, usuarioRequest, Usuario.class);
+            System.out.println("Usuario encontrado: " + Usuarioexist);
+            return Usuarioexist;
+        } catch (HttpClientErrorException e) {
+            System.out.println("Error HTTP: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al verificar existencia del usuario" + e.getMessage());
+        }
+    }
+
+    public Estado existEstado(Long idEstado) {
+        Estado EstadoRequest = new Estado();
+        EstadoRequest.setIdEstado(idEstado);
+
+        String url_register_service = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
+
+        try {
+            Estado EstadoState = restTemplate.getForObject(url_register_service, Estado.class, EstadoRequest);
+            System.out.println("Estado del Ticket " + EstadoState);
+            return EstadoState;
+        } catch (HttpClientErrorException e) {
+            System.out.println("Error HTTP: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al verificar el estado del Ticket" + e.getMessage());
+        }
     }
     
 

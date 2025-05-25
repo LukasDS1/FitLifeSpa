@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,8 +37,9 @@ public class Clase {
     @Column(nullable = false)
     private String descripcion;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "idServicio")
     @JsonIgnoreProperties("clases")
     private Servicio servicio;
+
 }

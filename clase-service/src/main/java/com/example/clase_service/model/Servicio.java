@@ -20,18 +20,22 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class Servicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idServicio;
 
-    @Column(nullable = false, length = 20)
+    @Column
+    (nullable = false,length = 20)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column
+    (nullable =  false)
     private String descripcion;
 
     @OneToMany(mappedBy = "servicio")
     @JsonIgnore
     List<Clase> clases;
+
 }

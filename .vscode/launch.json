@@ -12,21 +12,24 @@
             "name": "MembresiaServiceApplication",
             "request": "launch",
             "mainClass": "com.example.membresia_service.MembresiaServiceApplication",
-            "projectName": "membresia-service"
+            "projectName": "membresia-service",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
             "name": "PrivilegesServiceApplication",
             "request": "launch",
             "mainClass": "com.example.privileges_service.PrivilegesServiceApplication",
-            "projectName": "privileges-service"
+            "projectName": "privileges-service",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
             "name": "FormServiceApplication",
             "request": "launch",
             "mainClass": "com.example.form_service.FormServiceApplication",
-            "projectName": "form-service"
+            "projectName": "form-service",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -61,7 +64,8 @@
             "mainClass": "com.example.usermanagement_service.UsermanagementServiceApplication",
             "projectName": "usermanagement-service",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=58615 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=usermanagement-service"
         },
         {
             "type": "java",
@@ -71,7 +75,8 @@
             "mainClass": "com.example.clase_service.ClaseServiceApplication",
             "projectName": "clase-service",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -81,7 +86,8 @@
             "mainClass": "com.example.gymservices_service.GymservicesServiceApplication",
             "projectName": "gymservices-service",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -91,7 +97,8 @@
             "mainClass": "com.example.inscripcion_service.InscripcionServiceApplication",
             "projectName": "inscripcion-service",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -100,6 +107,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.reserva_service.ReservaServiceApplication",
             "projectName": "reserva-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ResenaServiceApplication<resena-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.resena_service.ResenaServiceApplication",
+            "projectName": "resena-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

@@ -25,12 +25,13 @@ public class LoadDataBase {
     CommandLineRunner initDataBase(RolRepository rolRepository, EstadoRepository estadoRepo, PrivilegesRepository privRepo, ModuloRepository modRepo) {
         return args -> {
             if (rolRepository.count() == 0 && estadoRepo.count() == 0 && privRepo.count() == 0 && modRepo.count() == 0) {
+                // Roles sobrescriben las otras tablas
                 Rol admin = new Rol(null,"Administrador", new ArrayList<>());
                 rolRepository.save(admin);
 
                 Rol cliente = new Rol(null, "Cliente", new ArrayList<>());
                 rolRepository.save(cliente);
-
+                
                 Estado activo = new Estado(null, "Activo", new ArrayList<>());
                 estadoRepo.save(activo);
 

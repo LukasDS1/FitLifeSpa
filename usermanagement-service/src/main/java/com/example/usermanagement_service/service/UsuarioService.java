@@ -19,10 +19,6 @@ public class UsuarioService {
 
     private final RestTemplate restTemplate;
 
-
-    
-
-
     public String encrypt(String password){
         return passwordEncoder.encode(password);
     }
@@ -42,7 +38,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario1);
     }
 
-   public Usuario exist(String email) {
+        public Usuario exist(String email) {
         Usuario usuarioRequest = new Usuario();
         usuarioRequest.setEmail(email);
 

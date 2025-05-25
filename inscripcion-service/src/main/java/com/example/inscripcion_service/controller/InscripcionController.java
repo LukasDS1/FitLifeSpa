@@ -46,16 +46,14 @@ public class InscripcionController {
                 inscriService.agragarInscripcion(inscripcion);
                 return ResponseEntity.status(HttpStatus.CREATED).body(inscripcion);
             } catch (Exception e) {
-                // TODO: handle exception
                 return ResponseEntity.badRequest().build();
             }
         } else {
             return ResponseEntity.badRequest().build();
         }
-
     }
 
-    @GetMapping("/inscripciones/{id}")
+    @GetMapping("/inscripciones/{id}") 
     public ResponseEntity<?> findInscById(@PathVariable Long id){
         if (inscriService.validacion(id) == false) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Esta inscripcion no existe");
