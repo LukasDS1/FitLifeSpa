@@ -8,12 +8,15 @@ import com.example.form_service.service.FormService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api-v1/form")
@@ -34,11 +37,21 @@ public class FormController {
         }
     }
 
-    @GetMapping("/get/{idForm}")
+    @GetMapping
+    public ResponseEntity<List<Form>> getForms() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(formService.getForm());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al conseguir todos los formularios.");
+        }
+    }
+    
+
+    @GetMapping("/{idForm}")
     public ResponseEntity<Form> getFormById(@PathVariable Long idForm) {
         try {
             if (idForm != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(formService.getForm(idForm));
+                return ResponseEntity.status(HttpStatus.OK).body(formService.getFormId(idForm));
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {

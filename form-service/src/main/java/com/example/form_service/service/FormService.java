@@ -1,5 +1,7 @@
 package com.example.form_service.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.form_service.model.Form;
@@ -26,13 +28,21 @@ public class FormService {
         return false;
     }
 
+    public List<Form> getForm() {
+        try {
+            return formRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al conseguir los formularios.");
+        }
+    }
+
     /**
      * 
      * @param idForm como id del formulario
      * @return si encuentra un formulario devuelve un objeto {@code Form}
      * @throws RuntimeException si no existe el formulario.
      */
-    public Form getForm(Long idForm) {
+    public Form getFormId(Long idForm) {
         if (formRepository.existsById(idForm)) {
             return formRepository.findById(idForm).get();
         }
