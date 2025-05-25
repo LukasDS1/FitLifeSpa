@@ -2,6 +2,7 @@ package com.example.usermanagement_service.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.usermanagement_service.model.Usuario;
@@ -41,17 +42,30 @@ public class UsuarioService {
         return usuarioRepository.save(usuario1);
     }
 
-   public Boolean Exist(String email) {
-        String url = "http://localhost:8081/api-v1/exists?email="+email;
+   public Usuario exist(String email) {
+        Usuario usuarioRequest = new Usuario();
+        usuarioRequest.setEmail(email);
+
+        String url_register_service = "http://localhost:8082/api-v1/register/exists";
+
         try {
-            Boolean exist = restTemplate.getForObject(url, boolean.class);
-            if (exist != null) {
-                return exist;
-            }
+            Usuario Usuarioexist = restTemplate.postForObject(url_register_service, usuarioRequest,Usuario.class);
+              System.out.println("Usuario encontrado: " + Usuarioexist);
+            return Usuarioexist;
+        } catch (HttpClientErrorException e) {
+        System.out.println("Error HTTP: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+        return null;
+        } catch (Exception e){
+        throw new RuntimeException("Error al verificar existencia del usuario"+ e.getMessage());
+    }
+    }
+
+    public boolean validateUser(String email){
+        if(email == null || email.trim().isEmpty()){
             return false;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al verificar existencia del usuario", e);
         }
+        Usuario usuario1 = exist(email);
+        return usuario1 != null;
     }
 
 

@@ -42,7 +42,6 @@ CommandLineRunner initDatabase(
             Rol soporte = new Rol(null, "Soporte", new ArrayList<>());
             rolRepository.save(cliente);
             rolRepository.save(soporte);
-
   
             Usuario usuario1 = new Usuario(null, "prueba@gmail.com", "null", "LUKAS", "Donsoso", "lol", "null", "12345678-9", new ArrayList<>(), cliente);
             usuario1.setPassword(passwordEncoder.encode(usuario1.getPassword()));
@@ -52,27 +51,35 @@ CommandLineRunner initDatabase(
             usuario2.setPassword(passwordEncoder.encode(usuario2.getPassword()));
             usuarioRepository.save(usuario2);
 
-        
             Estado activo = new Estado(null, "Activo", new ArrayList<>());
             Estado inactivo = new Estado(null, "Inactivo", new ArrayList<>());
             estadoRepository.save(activo);
             estadoRepository.save(inactivo);
 
-        
-            Motivo motivo1 = new Motivo(null, "Si", new ArrayList<>());
-            motivoRepository.save(motivo1);
+            Motivo preguntas = new Motivo(null, "Preguntas.", new ArrayList<>());
+            motivoRepository.save(preguntas);
 
+            Motivo solicitudServicio = new Motivo(null, "Solicitud de Servicio.", new ArrayList<>());
+            motivoRepository.save(solicitudServicio);
 
-            Ticket ticket1 = new Ticket(null,new java.sql.Date(System.currentTimeMillis()),null,new ArrayList<>(),motivo1,activo,usuario1);
+            Motivo incidentesSeguridad = new Motivo(null, "Incidentes de Seguridad.", new ArrayList<>());
+            motivoRepository.save(incidentesSeguridad);
+
+            Motivo sugerencias = new Motivo(null, "Sugerencias.", new ArrayList<>());
+            motivoRepository.save(sugerencias);
+
+            Motivo reclamos = new Motivo(null, "Reclamos.", new ArrayList<>());
+            motivoRepository.save(reclamos);
+
+            Ticket ticket1 = new Ticket(null,new java.sql.Date(System.currentTimeMillis()),null,new ArrayList<>(),preguntas,activo,usuario1);
             ticketRepository.save(ticket1); 
 
             activo.getTicket().add(ticket1);
-            motivo1.getTicket().add(ticket1);
+            preguntas.getTicket().add(ticket1);
             estadoRepository.save(activo);
-            motivoRepository.save(motivo1);
+            motivoRepository.save(preguntas);
 
-            Historial historial = new Historial(null, "Hola", "consulta",
-new java.sql.Date(System.currentTimeMillis()), ticket1);
+            Historial historial = new Historial(null, "Hola", "consulta",new java.sql.Date(System.currentTimeMillis()), ticket1);
             historialRepository.save(historial);
 
         } else {

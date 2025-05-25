@@ -1,11 +1,8 @@
 package com.example.privileges_service.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.example.privileges_service.model.Rol;
 import com.example.privileges_service.repository.RolRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 

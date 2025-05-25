@@ -1,6 +1,5 @@
 package com.example.register_service.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.register_service.model.Usuario;
@@ -33,7 +32,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
     }
 
-    // Endpoint utilizado para conectar con microservicio de Login.
     @PostMapping("/exists")
     public ResponseEntity<?> getUserByMail(@RequestBody Usuario usuario) {
         try {
@@ -47,7 +45,6 @@ public class UsuarioController {
         }
     }
 
-    // Endpoint utilizado para conectar con Microservicio de Inscripción.
     @GetMapping("/exists/{id}")
     public ResponseEntity<?> existsById (@PathVariable Long id){
         Usuario usuario1 = usuarioService.buscarPorId(id);
