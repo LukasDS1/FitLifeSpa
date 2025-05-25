@@ -3,24 +3,22 @@ package com.example.inscripcion_service.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
 import com.example.inscripcion_service.model.Inscripcion;
 import com.example.inscripcion_service.repository.InscripcionRepository;
-
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class InscripcionService {
-    @Autowired
-    private InscripcionRepository inscripRepo;
+    
+    private final InscripcionRepository inscripRepo;
 
-    @Autowired 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public List<Inscripcion> listarInscripcion (){
         return inscripRepo.findAll();

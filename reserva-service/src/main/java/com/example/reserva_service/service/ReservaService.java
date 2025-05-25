@@ -12,18 +12,20 @@ import com.example.reserva_service.repository.ServicioRepository;
 import com.example.reserva_service.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReservaService {
-    @Autowired
-    private ReservaRepository reservaRepository;
+    
+    private final ReservaRepository reservaRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    
+    private final  UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ServicioRepository servicioRepository;
+    
+    private final ServicioRepository servicioRepository;
 
     public List<Reserva> listarReservas() {
         return reservaRepository.findAll();

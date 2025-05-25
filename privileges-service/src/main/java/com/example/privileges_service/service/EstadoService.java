@@ -7,12 +7,14 @@ import com.example.privileges_service.model.Estado;
 import com.example.privileges_service.repository.EstadoRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EstadoService {
-    @Autowired
-    private EstadoRepository estadoRepo;
+    
+    private final EstadoRepository estadoRepo;
 
     public Estado validarEstado(Long id){
         if(estadoRepo.existsById(id)){

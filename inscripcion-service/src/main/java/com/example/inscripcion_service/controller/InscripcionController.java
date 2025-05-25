@@ -1,8 +1,6 @@
 package com.example.inscripcion_service.controller;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,17 +17,18 @@ import com.example.inscripcion_service.service.ClaseService;
 import com.example.inscripcion_service.service.EstadoService;
 import com.example.inscripcion_service.service.InscripcionService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/v1/")
+@RequiredArgsConstructor
 public class InscripcionController {
-    @Autowired
-    private InscripcionService inscriService;
-
-    @Autowired
-    private EstadoService estadoService;
-
-    @Autowired
-    private ClaseService claseService;
+    
+    private final InscripcionService inscriService;
+    
+    private final EstadoService estadoService;
+  
+    private final ClaseService claseService;
 
     @GetMapping("inscripciones/total")
     public ResponseEntity<List<Inscripcion>> allInscripciones(){

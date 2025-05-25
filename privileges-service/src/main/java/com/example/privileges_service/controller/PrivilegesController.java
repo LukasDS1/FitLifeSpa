@@ -23,21 +23,18 @@ import com.example.privileges_service.service.ModuloService;
 import com.example.privileges_service.service.PrivilegesService;
 import com.example.privileges_service.service.RolService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("api/v1/privilegios")
+@RequiredArgsConstructor
 
 public class PrivilegesController {
-    @Autowired
-    private PrivilegesService privilegesService;
-
-    @Autowired
-    private RolService rolService;
-
-    @Autowired
-    private EstadoService estadoService;
-
-    @Autowired
-    private ModuloService moduloService;
+  
+    private final PrivilegesService privilegesService;
+    private final RolService rolService;
+    private final EstadoService estadoService;
+    private final ModuloService moduloService;
 
     @GetMapping("/total")
     public ResponseEntity<List<Privileges>> listPrivileges(){

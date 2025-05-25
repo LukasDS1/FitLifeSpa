@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.register_service.model.Usuario;
 import com.example.register_service.service.UsuarioService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api-v1/register")
+@RequiredArgsConstructor
 public class UsuarioController {
     
-    @Autowired
-    private UsuarioService usuarioService;
+    
+    private final UsuarioService usuarioService;
 
 
     @PostMapping("/crearUsuario")

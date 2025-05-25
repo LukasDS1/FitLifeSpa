@@ -7,12 +7,14 @@ import com.example.privileges_service.model.Rol;
 import com.example.privileges_service.repository.RolRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RolService {
-    @Autowired
-    private RolRepository rolRepository;
+    
+    private final RolRepository rolRepository;
 
     public Rol validarRol(Long id){
         if(rolRepository.existsById(id)){

@@ -12,21 +12,23 @@ import com.example.privileges_service.repository.PrivilegesRepository;
 import com.example.privileges_service.repository.RolRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PrivilegesService {
-    @Autowired
-    private PrivilegesRepository privRepository;
+   
+    private final PrivilegesRepository privRepository;
 
-    @Autowired
-    private RolRepository rolRepository;
+    
+    private final RolRepository rolRepository;
 
-    @Autowired
-    private EstadoRepository estadoRepository;
+    
+    private final EstadoRepository estadoRepository;
 
-    @Autowired
-    private ModuloRepository moduloRepository;
+    
+    private final  ModuloRepository moduloRepository;
 
     public Privileges addPrivileges(Privileges privi){
         return privRepository.save(privi);

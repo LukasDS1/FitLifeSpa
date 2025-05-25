@@ -7,12 +7,14 @@ import com.example.privileges_service.model.Modulo;
 import com.example.privileges_service.repository.ModuloRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ModuloService {
-    @Autowired
-    private ModuloRepository modRepo;
+    
+    private final ModuloRepository modRepo;
 
     public Modulo validarModulo(Long id){
         if (modRepo.existsById(id)){

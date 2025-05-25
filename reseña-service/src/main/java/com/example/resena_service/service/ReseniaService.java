@@ -2,25 +2,23 @@ package com.example.resena_service.service;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
 import com.example.resena_service.model.Resenia;
 import com.example.resena_service.repository.ReseniaRepository;
-
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReseniaService {
-    @Autowired
-    private ReseniaRepository reseniaRepository;
+   
+    private final ReseniaRepository reseniaRepository;
 
-    @Autowired
-    private RestTemplate cliente;
+  
+    private final RestTemplate cliente;
 
 
     public List<Resenia> listar(){

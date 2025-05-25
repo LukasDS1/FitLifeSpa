@@ -1,20 +1,19 @@
 package com.example.inscripcion_service.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.example.inscripcion_service.repository.ClaseRepository;
-
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ClaseService {
-    @Autowired
-    private ClaseRepository claseRepo;
+    
+    private final ClaseRepository claseRepo;
 
-    @Autowired 
+   
     RestTemplate restTemplate;
 
     
