@@ -28,10 +28,6 @@ public class InscripcionService {
         return inscripRepo.findById(id).get();
     }
 
-    public Inscripcion agragarInscripcion1(Inscripcion insc) {
-        return inscripRepo.save(insc);
-    }
-
 
     public Boolean validacion(Long id){
         return inscripRepo.existsById(id);
@@ -48,10 +44,12 @@ public class InscripcionService {
     public Inscripcion agragarInscripcion(Inscripcion insc) {
         String url_register_service = "http://localhost:8082/api-v1/register/exists/{id}";
         try {
+            
+            @SuppressWarnings("rawtypes")
             Map cliente = restTemplate.getForObject(url_register_service, Map.class, insc.getIdUsuario());
 
             if (cliente == null || cliente.isEmpty()) {
-            throw new RuntimeException("El usuario no existe");
+                throw new RuntimeException("El usuario no existe");
             }
             return inscripRepo.save(insc);
         } catch (HttpClientErrorException.NotFound e) {
