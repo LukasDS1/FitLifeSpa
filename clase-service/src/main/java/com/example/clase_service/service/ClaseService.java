@@ -59,14 +59,14 @@ public class ClaseService {
         }
     }
 
-     public Boolean validarServicio (Clase clase){
+    public Boolean validarServicio (Clase clase){
         String url = "http://localhost:8085/api-v1/service/exists/{id}";
         try {
             @SuppressWarnings("rawtypes")
             Map objeto = restTemplate.getForObject(url, Map.class, clase.getServicio().getIdServicio());
 
             if (objeto == null || objeto.isEmpty()) {
-                throw new RuntimeException("El servicio no exise");
+                throw new RuntimeException("El servicio no existe.");
             }
             return true;
         } catch (HttpClientErrorException.NotFound e) {

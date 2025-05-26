@@ -26,11 +26,11 @@ public class LoadDataBase {
         return args -> {
             if (rolRepository.count() == 0 && estadoRepo.count() == 0 && privRepo.count() == 0 && modRepo.count() == 0) {
                 // Roles sobrescriben las otras tablas
-                Rol admin = new Rol(null,"Administrador", new ArrayList<>());
-                rolRepository.save(admin);
+                // Rol admin = new Rol(null,"Administrador", new ArrayList<>());
+                // rolRepository.save(admin);
 
-                Rol cliente = new Rol(null, "Cliente", new ArrayList<>());
-                rolRepository.save(cliente);
+                // Rol cliente = new Rol(null, "Cliente", new ArrayList<>());
+                // rolRepository.save(cliente);
                 
                 Estado activo = new Estado(null, "Activo", new ArrayList<>());
                 estadoRepo.save(activo);
@@ -44,10 +44,10 @@ public class LoadDataBase {
                 Modulo reserva = new Modulo(null,"Reserva", new ArrayList<>());
                 modRepo.save(reserva);
 
-                Privileges delete = new Privileges(null,admin,activo,UserManagement);
+                Privileges delete = new Privileges(null,null,activo,UserManagement);
                 privRepo.save(delete);
 
-                Privileges reservar = new Privileges(null, cliente, activo, reserva);
+                Privileges reservar = new Privileges(null, null, activo, reserva);
                 privRepo.save(reservar);
 
                 System.out.println("Datos cargados correctamente");

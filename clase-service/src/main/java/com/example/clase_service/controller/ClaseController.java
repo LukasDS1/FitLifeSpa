@@ -11,6 +11,7 @@ import com.example.clase_service.service.ClaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -35,19 +36,19 @@ public class ClaseController {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<Clase> createClass(@RequestBody Clase clase) {
+    public ResponseEntity<String> createClass(@RequestBody Clase clase) {
         try {
             claseService.saveClase(clase);
-            return ResponseEntity.ok().body(clase);
+            return ResponseEntity.ok().body("clase creada correctamente.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Error al crear la clase.");
         }
     }
 
-    @GetMapping("/listarid")
-    public ResponseEntity<Clase> getClaseById(@RequestBody Clase clase) {
+    @GetMapping("/listarid/{idClase}")
+    public ResponseEntity<Clase> getClaseById(@PathVariable Long idClase) {
         try {
-            Optional<Clase> exist = claseService.getClaseById(clase.getIdClase());
+            Optional<Clase> exist = claseService.getClaseById(idClase);
             if (exist.isPresent()) {
                 return ResponseEntity.ok(exist.get());
             }
@@ -57,13 +58,13 @@ public class ClaseController {
         }
     }
 
-    @DeleteMapping("/borrar")
-    public ResponseEntity<String> deleteClaseById(@RequestBody Clase clase) { 
+    @DeleteMapping("/borrar/{idClase}")
+    public ResponseEntity<String> deleteClaseById(@PathVariable Long idClase) { 
         try {
-            Optional<Clase> exist = claseService.getClaseById(clase.getIdClase());
+            Optional<Clase> exist = claseService.getClaseById(idClase);
             if (exist.isPresent()) {
-                claseService.deleteClase(clase.getIdClase());
-                return ResponseEntity.ok().body("Clase con ID: " + clase.getIdClase() + " Ha sido borrada con exito");
+                claseService.deleteClase(idClase);
+                return ResponseEntity.ok().body("Clase con ID: " + idClase + " Ha sido borrada con exito");
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

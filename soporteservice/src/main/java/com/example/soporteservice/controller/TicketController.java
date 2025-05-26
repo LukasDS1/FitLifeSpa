@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.soporteservice.model.Estado;
 import com.example.soporteservice.model.Ticket;
-import com.example.soporteservice.service.EstadoService;
 import com.example.soporteservice.service.TicketService;
 import lombok.RequiredArgsConstructor;
 
@@ -20,13 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class TicketController {
 
     private final TicketService ticketService;
-    private final EstadoService estadoService;
-
-   
-    
 
     @PostMapping("/estado")
-    public ResponseEntity<String> getEstadoTicket(@RequestBody Ticket ticket){
+    public ResponseEntity<?> getEstadoTicket(@RequestBody Ticket ticket){
         Optional<Ticket> exist = ticketService.getById(ticket.getIdTicket());   
         if(!exist.isPresent()){                                                 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID: "+ ticket.getIdTicket()+ " no existe");
@@ -39,10 +36,10 @@ public class TicketController {
         }
         try {
             Long idEstado = ticket1.getEstado().getIdEstado();
-            String stateEstado = estadoService.stateEstado(idEstado);
+            Estado stateEstado = ticketService.existEstado(idEstado); // TODO: Por probar
             return ResponseEntity.ok(stateEstado);
         } catch (Exception e) {
-            throw new RuntimeException("erro al obtener el estado");
+            throw new RuntimeException("Error al obtener el estado");
         }
         }
 

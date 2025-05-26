@@ -64,7 +64,7 @@ public class ReseniaService {
     }
 
     public Resenia agregarResenia(Resenia resenia){
-        if (validarServicio(resenia) == true && validarUsuario(resenia) == true) {
+        if (validarServicio(resenia) && validarUsuario(resenia)) {
             return reseniaRepository.save(resenia);
         }
         return null;

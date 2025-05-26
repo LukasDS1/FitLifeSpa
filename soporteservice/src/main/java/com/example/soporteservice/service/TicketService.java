@@ -29,14 +29,15 @@ public class TicketService {
     }
 
     public Ticket createTicket(Ticket ticket) {
-        if (existEstado(ticket.getEstado().getIdEstado()) == null) {
-            if (exist(ticket.getUsuario().getEmail()) != null) {
+        if (existEstado(ticket.getEstado().getIdEstado()) != null) {
+            if (exist(ticket.getUsuario().getIdUsuario()) != null) {
                 Estado estado = ticket.getEstado();
                 ticket.setEstado(estado);
                 return ticketRepository.save(ticket);
             }
+            throw new RuntimeException("Email no encontrado.");
         }
-        throw new RuntimeException("Estado o email no encontrado(s)");
+        throw new RuntimeException("Estado no encontrado o no válido.");
     }
 
     public Ticket updateStateTicket(Ticket ticket) {
@@ -58,14 +59,11 @@ public class TicketService {
         return ticket;
     }
 
-    public Usuario exist(String email) {
-        Usuario usuarioRequest = new Usuario();
-        usuarioRequest.setEmail(email);
-
-        String url_register_service = "http://localhost:8082/api-v1/register/exists";
+    public Usuario exist(Long idUsuario) {
+        String url_register_service = "http://localhost:8082/api-v1/register/exists/{idUsuario}";
 
         try {
-            Usuario Usuarioexist = restTemplate.postForObject(url_register_service, usuarioRequest, Usuario.class);
+            Usuario Usuarioexist = restTemplate.getForObject(url_register_service, Usuario.class, idUsuario);
             System.out.println("Usuario encontrado: " + Usuarioexist);
             return Usuarioexist;
         } catch (HttpClientErrorException e) {
@@ -77,13 +75,11 @@ public class TicketService {
     }
 
     public Estado existEstado(Long idEstado) {
-        Estado EstadoRequest = new Estado();
-        EstadoRequest.setIdEstado(idEstado);
 
         String url_register_service = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
 
         try {
-            Estado EstadoState = restTemplate.getForObject(url_register_service, Estado.class, EstadoRequest);
+            Estado EstadoState = restTemplate.getForObject(url_register_service, Estado.class, idEstado);
             System.out.println("Estado del Ticket " + EstadoState);
             return EstadoState;
         } catch (HttpClientErrorException e) {
