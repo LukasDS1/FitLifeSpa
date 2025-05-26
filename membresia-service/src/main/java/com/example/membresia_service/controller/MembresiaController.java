@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 
 @RestController
-@RequestMapping("/api-v1")
+@RequestMapping("/api-v1/membresia")
 @RequiredArgsConstructor
 public class MembresiaController {  
 
@@ -82,7 +82,7 @@ public class MembresiaController {
     @PutMapping("/assignplan")
     public ResponseEntity<String> assignPlan(@RequestBody Membresia membresia) {
         try {
-            if (membresia.getPlan().getIdPlan() == null) {
+            if (membresia.getPlan() == null || membresia.getPlan().getIdPlan() == null) {
             return ResponseEntity.badRequest().body("Falta el ID del plan.");
         }   
             membresiaService.assignPlanToMembership(membresia.getIdMembresia(), membresia.getPlan().getIdPlan());
@@ -97,7 +97,7 @@ public class MembresiaController {
     public ResponseEntity<String> assignUser(@RequestBody Membresia membresia) {
         try {
             if(membresia.getUsuario().getEmail() == null){
-                return ResponseEntity.badRequest().body("Falta el ID del usuario.");
+                return ResponseEntity.badRequest().body("Falta el email del usuario.");
             }
             membresiaService.assignUsuarioToMembership(membresia.getIdMembresia(),membresia.getUsuario().getEmail());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario con Email"+membresia.getUsuario().getEmail()+" agregado con exito");
@@ -105,5 +105,4 @@ public class MembresiaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
 }
