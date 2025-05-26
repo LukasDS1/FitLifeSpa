@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import com.example.privileges_service.model.Estado;
 import com.example.privileges_service.model.Modulo;
 import com.example.privileges_service.model.Privileges;
-import com.example.privileges_service.model.Rol;
 import com.example.privileges_service.repository.EstadoRepository;
 import com.example.privileges_service.repository.ModuloRepository;
 import com.example.privileges_service.repository.PrivilegesRepository;

@@ -5,14 +5,8 @@ import java.util.ArrayList;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.soporteservice.model.Estado;
-import com.example.soporteservice.model.Historial;
 import com.example.soporteservice.model.Motivo;
-import com.example.soporteservice.model.Rol;
-import com.example.soporteservice.model.Ticket;
-import com.example.soporteservice.model.Usuario;
 import com.example.soporteservice.repository.EstadoRepository;
 import com.example.soporteservice.repository.HistorialRepository;
 import com.example.soporteservice.repository.MotivoRepository;
@@ -27,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class LoadToDataBase {
     //TODO:CAMBIAR TIDO DE DATE PARA QUE SEA COMO SYSDATE O COMO DATE DEPENDIENDO DE 
     //TODO:BORRAR USUARIO Y ROL SOLO ESTAN DE PRUEBA y los repositorios de usuario etc
-    private final PasswordEncoder passwordEncoder;
       @Bean
 CommandLineRunner initDatabase(
         UsuarioRepository usuarioRepository,
