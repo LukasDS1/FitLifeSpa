@@ -35,7 +35,7 @@ public class Membresia {
 
     @Column
     (nullable = false, length = 200)
-    private String Descripcion;
+    private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPlan")

@@ -41,7 +41,7 @@ public class Plan {
 
     @Column
     (nullable = false)
-    private int Duracion;
+    private int duracion;
 
     @OneToMany(mappedBy = "plan",cascade = CascadeType.ALL)
     @JsonIgnore

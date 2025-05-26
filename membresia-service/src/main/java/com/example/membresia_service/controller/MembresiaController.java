@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -29,6 +31,7 @@ public class MembresiaController {
             membresiaService.saveMembresia(membresia);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(membresia);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -76,6 +79,31 @@ public class MembresiaController {
 
     }
 
+    @PutMapping("/assignplan")
+    public ResponseEntity<String> assignPlan(@RequestBody Membresia membresia) {
+        try {
+            if (membresia.getPlan().getIdPlan() == null) {
+            return ResponseEntity.badRequest().body("Falta el ID del plan.");
+        }   
+            membresiaService.assignPlanToMembership(membresia.getIdMembresia(), membresia.getPlan().getIdPlan());
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Plan con ID: "+membresia.getPlan().getIdPlan()+" agregada con exito a la membresia de ID: "+membresia.getIdMembresia());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            
+        }
+    }
 
-
+    @PutMapping("/assignuser")
+    public ResponseEntity<String> assignUser(@RequestBody Membresia membresia) {
+        try {
+            if(membresia.getUsuario().getEmail() == null){
+                return ResponseEntity.badRequest().body("Falta el ID del usuario.");
+            }
+            membresiaService.assignUsuarioToMembership(membresia.getIdMembresia(),membresia.getUsuario().getEmail());
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario con Email"+membresia.getUsuario().getEmail()+" agregado con exito");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
 }
