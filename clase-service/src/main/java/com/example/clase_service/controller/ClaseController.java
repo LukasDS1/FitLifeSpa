@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("/api-v1")
+@RequestMapping("/api-v1/clase")
 @RequiredArgsConstructor
 public class ClaseController {
 
 
     private final ClaseService claseService;
-
 
     @GetMapping("/listar")
     public ResponseEntity<List<Clase>> getAllClass() {
@@ -32,7 +31,6 @@ public class ClaseController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-
     }
 
     @PostMapping("/crear")

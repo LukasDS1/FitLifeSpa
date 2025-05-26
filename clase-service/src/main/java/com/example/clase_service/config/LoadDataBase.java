@@ -20,6 +20,14 @@ public class LoadDataBase {
             if(claseRepository.count() == 0){
                 Clase Pilates = new Clase(null,"Clase de pilates",new java.sql.Date(System.currentTimeMillis()),"Clase de pilates",null);
                 claseRepository.save(Pilates);
+                Clase Spinning = new Clase(null,"Clase de Spinnig",new java.sql.Date(System.currentTimeMillis()),"Clase de spinning",null);
+                claseRepository.save(Spinning);
+                Clase Zumba = new Clase(null,"Clase de Zumba",new java.sql.Date(System.currentTimeMillis()),"Clase de Zumba",null);
+                claseRepository.save(Zumba);
+                Clase CrossFit = new Clase(null,"Clase de Cross Fit",new java.sql.Date(System.currentTimeMillis()),"Clase de Cross Fit",null);
+                claseRepository.save(CrossFit);
+                Clase Yoga = new Clase(null,"Clase de Yoga",new java.sql.Date(System.currentTimeMillis()),"Clase de Yoga",null);
+                claseRepository.save(Yoga);
 
             }else{
                 System.out.println("Datos ya existen.No se cargaron");
