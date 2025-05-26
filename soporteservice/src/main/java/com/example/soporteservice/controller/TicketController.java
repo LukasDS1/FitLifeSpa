@@ -36,7 +36,7 @@ public class TicketController {
         }
         try {
             Long idEstado = ticket1.getEstado().getIdEstado();
-            Estado stateEstado = ticketService.existEstado(idEstado); // TODO: Por probar
+            Estado stateEstado = ticketService.existEstado(idEstado); 
             return ResponseEntity.ok(stateEstado);
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener el estado");
