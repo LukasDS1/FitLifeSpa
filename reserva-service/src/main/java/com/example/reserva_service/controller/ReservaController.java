@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.reserva_service.model.Reserva;
+import com.example.reserva_service.model.estadoReserva;
 import com.example.reserva_service.service.ReservaService;
+import com.example.reserva_service.service.estadoReservaService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservaController {
     private final ReservaService reservaService;
+
+    private final estadoReservaService estadoReservaService;
 
     @GetMapping
     public ResponseEntity<List<Reserva>> findAll(){
@@ -51,6 +55,25 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
+    @GetMapping("/estados")
+    public ResponseEntity<List<estadoReserva>> findAllEstadoReserva(){
+        List <estadoReserva> estados = estadoReservaService.listarTodo();
+        if (estados.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(estados);
+    }
+
+
+    @GetMapping("/estados/{id}")
+    public ResponseEntity<estadoReserva> findByIdEstadoReserva(@PathVariable Long id){
+        estadoReserva estado = estadoReservaService.listarPorId(id);
+        if (estado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(estado);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> addReserva(@RequestBody Reserva reserva) {
         Reserva reserva1 = reservaService.agregarReserva(reserva);
@@ -58,6 +81,20 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(reserva1);
+    }
+
+    @PostMapping("/estados/add")
+    public ResponseEntity<?> addEstadoReserva(@RequestBody estadoReserva estado){
+        try {
+            estadoReserva estado1 = estadoReservaService.agregarEstadoReserva(estado);
+            if (estado1 == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(estado1);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 
@@ -74,7 +111,7 @@ public class ReservaController {
             reserva1.setIdEntrenador(reserva.getIdEntrenador());
             reserva1.setIdServicio(reserva.getIdServicio());
             reserva1.setIdUsuario(reserva1.getIdUsuario());
-
+            reserva1.setEstadoReservas(reserva.getEstadoReservas());
             reservaService.agregarReserva(reserva1);
 
             return ResponseEntity.ok(reserva1);
@@ -87,11 +124,23 @@ public class ReservaController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteReserva (@PathVariable Long id){
-        if (reservaService.validarService(id)) {
+        Reserva reserva1 = reservaService.buscarPorId(id);
+        if (reserva1 != null) {
             reservaService.borrarReserva(id);
             return ResponseEntity.ok("Reserva eliminada");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada");
         }
+    }
+
+    @DeleteMapping("/estados/delete/{id}")
+    public ResponseEntity<?> deleteEstadoReserva (@PathVariable Long id){
+        estadoReserva estado = estadoReservaService.listarPorId(id);
+        if (estado == null) {
+            return ResponseEntity.noContent().build();
+        }
+        estadoReservaService.eliminarEstadoReserva(id);
+        return ResponseEntity.ok("Estado Eliminado");
+
     }
 }
