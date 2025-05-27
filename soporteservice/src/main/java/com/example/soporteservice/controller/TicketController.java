@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ import com.example.soporteservice.service.TicketService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api-v1")
+@RequestMapping("/api-v1/ticket")
 @RequiredArgsConstructor
 public class TicketController {
 
@@ -58,7 +59,9 @@ public class TicketController {
                     return ResponseEntity.badRequest().body("El ID del motivo es requerido");
                 }
 
-                return ResponseEntity.ok(ticketService.createTicket(ticket));
+                ticketService.createTicket(ticket);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body("El ticket ha sido creado con exito");
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
@@ -75,14 +78,14 @@ public class TicketController {
             }
         }
 
-        @GetMapping("/listartkid")
-        public ResponseEntity<?> getIdTicket(@RequestBody Ticket ticket) {
+        @GetMapping("/listartkid/{idTicket}")
+        public ResponseEntity<?> getIdTicket(@PathVariable Long idTicket) {
             try {
-                Optional<Ticket> exist = ticketService.getById(ticket.getIdTicket()); 
+                Optional<Ticket> exist = ticketService.getById(idTicket); 
                 if(exist.isPresent()){
                     return ResponseEntity.ok().body(exist.get());
                 }
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID "+ticket.getIdTicket()+" no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID "+idTicket+" no encontrado");
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }

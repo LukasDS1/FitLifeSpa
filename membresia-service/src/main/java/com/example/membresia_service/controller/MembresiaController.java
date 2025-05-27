@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -25,18 +26,18 @@ public class MembresiaController {
 
     private final MembresiaService membresiaService;    
 
-    @PostMapping("/crear")
-    public ResponseEntity<Membresia> saveMembresia(@RequestBody Membresia membresia) {
+    @PostMapping("/crearmembresia")
+    public ResponseEntity<String> saveMembresia(@RequestBody Membresia membresia) {
         try {
             membresiaService.saveMembresia(membresia);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(membresia);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Membresia creada con exito!");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @GetMapping("/listar")
+    @GetMapping("/listarmembresia")
     public ResponseEntity<List<Membresia>> getAllMembresias() {
         try {
             return ResponseEntity.ok(membresiaService.getByAll());
@@ -45,26 +46,26 @@ public class MembresiaController {
         }
     }
 
-    @GetMapping("/listarid")
-    public ResponseEntity<Membresia> getById(@RequestBody Membresia membresia) {
+    @GetMapping("/listarid/{idMembresia}")
+    public ResponseEntity<Membresia> getById(@PathVariable Long idMembresia) {
         try {
-            Optional<Membresia> exist = membresiaService.findByid(membresia.getIdMembresia());
+            Optional<Membresia> exist = membresiaService.findByid(idMembresia);
             if (exist.isPresent()) {
                 return ResponseEntity.ok(exist.get());
             }
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            throw new RuntimeException("Membresia con ID: " + membresia.getIdMembresia() + "no encontrada");
+            throw new RuntimeException("Membresia con ID: " + idMembresia + "no encontrada");
         }
     }
 
-    @DeleteMapping("/borrar")
-    public ResponseEntity<Membresia> deleteMembresias(@RequestBody Membresia membresia) {
+    @DeleteMapping("/borrar/{idMembresia}")
+    public ResponseEntity<String> deleteMembresias(@PathVariable Long idMembresia) {
         try {
-            membresiaService.deleteMembresia(membresia.getIdMembresia());
-            return ResponseEntity.ok().build();
+            membresiaService.deleteMembresia(idMembresia);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Membresia borrada con exito!");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Membresia con ID: "+idMembresia+" no encontrada");
         }
     }
 

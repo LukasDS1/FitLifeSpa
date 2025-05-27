@@ -23,11 +23,5 @@ public class HistorialService {
         return historialRepository.findById(idHistorial).orElseThrow();
     }
 
-    public Historial createHistorial(Historial historial){
-        return historialRepository.save(historial);
-    }
-
-
-
 
 }

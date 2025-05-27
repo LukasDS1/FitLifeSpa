@@ -40,28 +40,9 @@ public class TicketService {
         throw new RuntimeException("Estado no encontrado o no válido.");
     }
 
-    public Ticket updateStateTicket(Ticket ticket) {
-        if (ticketRepository.existsById(ticket.getIdTicket())) {
-            Ticket ticket2 = ticketRepository.findById(ticket.getIdTicket())
-                    .orElseThrow(() -> new RuntimeException(""));
-            ticket2.setEstado(ticket.getEstado());
-            return ticketRepository.save(ticket2);
-        }
-        throw new RuntimeException("Ticket con ID: " + ticket.getIdTicket() + " no encontrado!");
-    }
-
-    public Ticket getTicketbyId2(Long idTicket) {
-        Ticket ticket = ticketRepository.findById(idTicket).orElseThrow();
-        ticket.getMotivo().getIdMotivo();
-        ticket.getEstado().getIdEstado();
-        ticket.getUsuario().getIdUsuario();
-        ticket.getHistorial().size();
-        return ticket;
-    }
-
+   
     public Usuario exist(Long idUsuario) {
         String url_register_service = "http://localhost:8082/api-v1/register/exists/{idUsuario}";
-
         try {
             Usuario Usuarioexist = restTemplate.getForObject(url_register_service, Usuario.class, idUsuario);
             System.out.println("Usuario encontrado: " + Usuarioexist);

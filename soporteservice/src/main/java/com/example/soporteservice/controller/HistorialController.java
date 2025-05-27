@@ -9,19 +9,19 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
-@RequestMapping("/api-v1")
+@RequestMapping("/api-v1/historial")
 @RequiredArgsConstructor
 
 public class HistorialController {
 
     private final HistorialService historialService;
 
-    @GetMapping("/listar")
+    @GetMapping("/listarhistorial")
     public ResponseEntity<List<Historial>> getAllHistorial() {
         try {
             return ResponseEntity.ok(historialService.getHistorial());
@@ -30,23 +30,17 @@ public class HistorialController {
         }
     }
 
-    @GetMapping("/listarid")
-    public ResponseEntity<Historial> getIdHistorial(@RequestBody Historial historial) {
+    @GetMapping("/listarhistorial/{idHistorial}")
+    public ResponseEntity<Historial> getIdHistorial(@PathVariable Long idHistorial) {
         try {
-            return ResponseEntity.ok(historialService.getHistorialById(historial.getIdHistorial()));
+            return ResponseEntity.ok(historialService.getHistorialById(idHistorial));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
-    @PostMapping("/crearhistorial")
-    public ResponseEntity<Historial> createHistorial (@RequestBody Historial historial) {
-        try {
-            return ResponseEntity.ok(historialService.createHistorial(historial));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
+    
+
     
 
 

@@ -11,12 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-
-
-
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api-v1")
+@RequestMapping("/api-v1/motivo")
 @RequiredArgsConstructor
 
 public class MotivoController {
@@ -34,19 +32,21 @@ public ResponseEntity<Motivo> crearMotivo(@RequestBody Motivo motivo) {
     }
 }
 
-
-    @GetMapping("/obtener")
-    public ResponseEntity<?> getMotivo(@RequestBody Motivo motivo) {
+    @GetMapping("/listarmotivo/{idMotivo}")
+    public ResponseEntity<?> getMotivo(@PathVariable Long idMotivo) {
         try{
-            Optional<Motivo> exist = motivoService.getMotivo(motivo.getIdMotivo());
+            Optional<Motivo> exist = motivoService.getMotivo(idMotivo);
             if(exist.isPresent()){
                 return ResponseEntity.ok(exist.get());
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se ha podido obtener Motivo con ID: "+motivo.getIdMotivo());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se ha podido obtener Motivo con ID: "+idMotivo);
         } catch (Exception e){
-            throw new RuntimeException("No se ha podido obtener Motivo con ID: "+ motivo.getIdMotivo());
+            throw new RuntimeException("No se ha podido obtener Motivo con ID: "+ idMotivo);
         }
     }
+
+
+   
     
 
 
