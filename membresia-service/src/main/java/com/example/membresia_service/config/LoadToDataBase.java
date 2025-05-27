@@ -21,7 +21,7 @@ public class LoadToDataBase {
     @Bean
     CommandLineRunner initDatabase(PlanRepository planRepository, MembresiaRepository membresiaRepository){
         return args->{
-            if( membresiaRepository.count() == 0 && planRepository.count() == 0 && membresiaRepository.count() == 0 ){
+            if( membresiaRepository.count() == 0 && planRepository.count() == 0){
 
                 Membresia bronze = new Membresia(null,"Bronze","Membresia de acceso limitado",null,null);
                 membresiaRepository.save(bronze);
