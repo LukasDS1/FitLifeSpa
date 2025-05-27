@@ -2,6 +2,7 @@ package com.example.reserva_service.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ public class estadoReserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEstadoReserva;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column(nullable = false)
     private Date fechaEstadoReserva;
 

@@ -3,6 +3,7 @@ package com.example.reserva_service.model;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -27,9 +28,11 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idReserva;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column(nullable = false)
     private Date fechaReserva;
     
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column(nullable = false)
     private Date fechaContrato;
     

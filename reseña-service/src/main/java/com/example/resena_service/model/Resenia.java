@@ -2,6 +2,8 @@ package com.example.resena_service.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +24,7 @@ public class Resenia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idResenia;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Column
     private Date fechaReseña;
 

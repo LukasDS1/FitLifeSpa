@@ -22,7 +22,7 @@ import com.example.inscripcion_service.service.InscripcionService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class InscripcionController {
     
@@ -32,7 +32,7 @@ public class InscripcionController {
   
     private final ClaseService claseService;
 
-    @GetMapping("inscripciones/total")
+    @GetMapping("/inscripciones/total")
     public ResponseEntity<List<Inscripcion>> allInscripciones(){
         List<Inscripcion> lista = inscriService.listarInscripcion();
         if (lista.isEmpty()) {

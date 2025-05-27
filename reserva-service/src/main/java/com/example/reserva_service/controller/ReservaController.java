@@ -55,24 +55,6 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
-    @GetMapping("/estados")
-    public ResponseEntity<List<estadoReserva>> findAllEstadoReserva(){
-        List <estadoReserva> estados = estadoReservaService.listarTodo();
-        if (estados.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(estados);
-    }
-
-
-    @GetMapping("/estados/{id}")
-    public ResponseEntity<estadoReserva> findByIdEstadoReserva(@PathVariable Long id){
-        estadoReserva estado = estadoReservaService.listarPorId(id);
-        if (estado == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(estado);
-    }
 
     @PostMapping("/add")
     public ResponseEntity<?> addReserva(@RequestBody Reserva reserva) {
@@ -81,20 +63,6 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(reserva1);
-    }
-
-    @PostMapping("/estados/add")
-    public ResponseEntity<?> addEstadoReserva(@RequestBody estadoReserva estado){
-        try {
-            estadoReserva estado1 = estadoReservaService.agregarEstadoReserva(estado);
-            if (estado1 == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body(estado1);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return ResponseEntity.badRequest().build();
-        }
     }
 
 
