@@ -25,7 +25,7 @@ public class ReservaService {
     }
 
     public Reserva buscarPorId(Long id){
-        return reservaRepository.findById(id).orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        return reservaRepository.findById(id).get();
     }
 
     public Reserva agregarReserva(Reserva reserva){

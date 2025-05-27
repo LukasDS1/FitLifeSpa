@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.inscripcion_service.model.Clase;
+import com.example.inscripcion_service.model.Estado;
 import com.example.inscripcion_service.model.Inscripcion;
 import com.example.inscripcion_service.service.ClaseService;
 import com.example.inscripcion_service.service.EstadoService;
@@ -19,7 +22,7 @@ import com.example.inscripcion_service.service.InscripcionService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class InscripcionController {
     
@@ -29,7 +32,7 @@ public class InscripcionController {
   
     private final ClaseService claseService;
 
-    @GetMapping("inscripciones/total")
+    @GetMapping("/inscripciones/total")
     public ResponseEntity<List<Inscripcion>> allInscripciones(){
         List<Inscripcion> lista = inscriService.listarInscripcion();
         if (lista.isEmpty()) {
@@ -40,7 +43,9 @@ public class InscripcionController {
 
     @PostMapping("/inscripciones")
     public ResponseEntity<Inscripcion> addInscripcion(@RequestBody Inscripcion inst){
-        if(estadoService.validaEstado(inst.getEstado().getIdEstado()) && claseService.validaClase(inst.getClase().getIdClase())){
+        Estado estado = inst.getEstado();
+        Clase clase = inst.getClase();
+        if(estadoService.validarEstado(estado) && claseService.validarClase(clase)){
             try {
                 Inscripcion inscripcion = inst;
                 inscriService.agragarInscripcion(inscripcion);
