@@ -21,6 +21,12 @@ public class HistorialController {
 
     private final HistorialService historialService;
 
+    @GetMapping("/ticket/{idTicket}")
+    public ResponseEntity<List<Historial>> getHistorialesByTicketId(@PathVariable Long idTicket) {
+    List<Historial> historiales = historialService.getHistorialesByTicketId(idTicket);
+    return ResponseEntity.ok(historiales);
+}
+
     @GetMapping("/listarhistorial")
     public ResponseEntity<List<Historial>> getAllHistorial() {
         try {

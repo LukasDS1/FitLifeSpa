@@ -51,6 +51,4 @@ public class Historial {
     private Ticket ticket;
 
 
-    
-
 }

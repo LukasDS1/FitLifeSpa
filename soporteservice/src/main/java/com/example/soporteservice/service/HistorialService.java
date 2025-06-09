@@ -23,5 +23,10 @@ public class HistorialService {
         return historialRepository.findById(idHistorial).orElseThrow();
     }
 
+    
+  public List<Historial> getHistorialesByTicketId(Long idTicket) {
+    return historialRepository.findByTicketIdTicket(idTicket);
+}
+    
 
 }
