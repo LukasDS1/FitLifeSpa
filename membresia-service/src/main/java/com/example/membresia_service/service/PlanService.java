@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.membresia_service.model.Membresia;
 import com.example.membresia_service.model.Plan;
 import com.example.membresia_service.repository.PlanRepository;
 
@@ -44,20 +45,27 @@ public class PlanService {
         return planRepository.save(plan2);
     }
 
-    public Boolean delete(Long idPlan){
+    public Boolean delete(Long idPlan) {
         Optional<Plan> exist = planRepository.findById(idPlan);
         try {
-            if(exist.isEmpty()){
+            if (exist.isEmpty()) {
                 return false;
-            }else{
+            } else {
                 planRepository.deleteById(idPlan);
                 return true;
             }
-            
         } catch (Exception e) {
             throw new RuntimeException("");
         }
 
+    }
+
+    public List<Membresia> getMembresiasByPlanId(Long idPlan) {
+        Plan plan = planRepository.findById(idPlan)
+                .orElseThrow(() -> new RuntimeException("Plan no encontrado con ID: " + idPlan));
+
+        List<Membresia> membresias = plan.getMembresia();
+        return membresias;
     }
 
 }

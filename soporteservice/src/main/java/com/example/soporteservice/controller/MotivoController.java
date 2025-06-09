@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.soporteservice.model.Motivo;
 import com.example.soporteservice.service.MotivoService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+
 
 @RestController
 @RequestMapping("/api-v1/motivo")
@@ -44,6 +48,16 @@ public ResponseEntity<Motivo> crearMotivo(@RequestBody Motivo motivo) {
             throw new RuntimeException("No se ha podido obtener Motivo con ID: "+ idMotivo);
         }
     }
+
+    @GetMapping("/listarmotivo")
+    public ResponseEntity<List<Motivo>> getAllMotivo() {
+        try {
+            return ResponseEntity.ok().body(motivoService.getAllMotivo());
+        } catch (Exception e) {
+             return ResponseEntity.noContent().build();
+        }
+    }
+    
 
 
    

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class InscripcionService {
-    
+         
     private final InscripcionRepository inscripRepo;
 
     private final RestTemplate restTemplate;

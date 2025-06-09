@@ -43,6 +43,14 @@ public class Ticket {
     (nullable = true )
     private Long idSoporte;
 
+    @Column
+    (nullable = true )
+    private Long idEstado;
+
+     @Column
+    (nullable = true )
+    private Long idUsuario;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Historial>historial;
@@ -52,13 +60,5 @@ public class Ticket {
     @JsonIgnoreProperties({"ticket", "hibernateLazyInitializer", "handler"})
     private Motivo motivo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEstado", nullable = false)
-    @JsonIgnoreProperties({"ticket", "hibernateLazyInitializer", "handler"})
-    private Estado estado;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idUsuario",nullable = false)
-    @JsonIgnoreProperties({"ticket", "rol", "hibernateLazyInitializer", "handler"})
-    private Usuario usuario;
 }

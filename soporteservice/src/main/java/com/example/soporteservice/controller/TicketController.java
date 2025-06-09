@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.soporteservice.model.Estado;
 import com.example.soporteservice.model.Ticket;
 import com.example.soporteservice.service.TicketService;
 import lombok.RequiredArgsConstructor;
@@ -23,26 +22,28 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    @PostMapping("/estado")
-    public ResponseEntity<?> getEstadoTicket(@RequestBody Ticket ticket){
-        Optional<Ticket> exist = ticketService.getById(ticket.getIdTicket());   
-        if(!exist.isPresent()){                                                 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID: "+ ticket.getIdTicket()+ " no existe");
-        }
+     @GetMapping("usuario/{idUsuario}")
+public ResponseEntity<?> getMembresiasPorUsuario(@PathVariable Long idUsuario) {
+    boolean existe = ticketService.validarUsuario(idUsuario);
+    if (!existe) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario con ID " + idUsuario + " no existe.");
+    }
+    List<Ticket> tickets = ticketService.findbyidUsuario(idUsuario);
+    if (tickets.isEmpty()) {
+        return ResponseEntity.ok("El usuario existe pero no tiene membresías asignadas.");
+    }
+    return ResponseEntity.ok(tickets);
+}
 
-        Ticket ticket1 = exist.get();
-
-        if(ticket1.getEstado() == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID: "+ ticket1.getIdTicket()+" no existe");
-        }
+    @GetMapping("/estado/{idEstado}")
+    public ResponseEntity<String> getEstado(@PathVariable Long idEstado) {
         try {
-            Long idEstado = ticket1.getEstado().getIdEstado();
-            Estado stateEstado = ticketService.existEstado(idEstado); 
-            return ResponseEntity.ok(stateEstado);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al obtener el estado");
+            String estado = ticketService.validarEstado(idEstado);
+            return ResponseEntity.ok(estado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        }
+}
 
         @PostMapping("/creartk")
         public ResponseEntity<?> createTicket(@RequestBody Ticket ticket) {

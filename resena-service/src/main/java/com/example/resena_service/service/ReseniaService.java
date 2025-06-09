@@ -10,20 +10,17 @@ import com.example.resena_service.repository.ReseniaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class ReseniaService {
-   
-    private final ReseniaRepository reseniaRepository;
+@Service    
+@Transactional  
+@RequiredArgsConstructor    
+public class ReseniaService {   
 
-  
+    private final ReseniaRepository reseniaRepository;                                                                                                                                                                                                                                                            
     private final RestTemplate cliente;
-
 
     public List<Resenia> listar(){
         return reseniaRepository.findAll();
-    }
+    } 
 
     public Resenia buscarId(Long id){
         return reseniaRepository.findById(id)
@@ -46,6 +43,7 @@ public class ReseniaService {
             throw new RuntimeException("Error al obtener el cliente: " + e.getMessage());
         }
     }
+
     public Boolean validarUsuario(Resenia resenia){
         String url = "http://localhost:8082/api-v1/register/exists/{id}";
         try {
@@ -62,7 +60,7 @@ public class ReseniaService {
             throw new RuntimeException("Error al obtener el cliente: " + e.getMessage());
         }
     }
-
+    
     public Resenia agregarResenia(Resenia resenia){
         if (validarServicio(resenia) && validarUsuario(resenia)) {
             return reseniaRepository.save(resenia);

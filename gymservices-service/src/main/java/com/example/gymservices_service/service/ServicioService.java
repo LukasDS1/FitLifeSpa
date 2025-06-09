@@ -1,5 +1,6 @@
 package com.example.gymservices_service.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -14,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 public class ServicioService {
 
     private final ServicioRepository servicioRepository;
+
+    public List<Servicio> allServices(){
+        return servicioRepository.findAll();
+    } 
 
     public Servicio addService(Servicio servicio) {
         if (servicio != null) {

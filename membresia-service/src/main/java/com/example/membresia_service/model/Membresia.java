@@ -1,10 +1,12 @@
 package com.example.membresia_service.model;
 
+import java.util.List;
 
-
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,15 +39,14 @@ public class Membresia {
     (nullable = false, length = 200)
     private String descripcion;
 
+    @ElementCollection
+    @CollectionTable(name = "membresia_usuarios", joinColumns = @JoinColumn(name = "id_membresia"))
+    @Column(name = "id_usuario")
+    private List<Long> idUsuario;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPlan")
-    @JsonIgnoreProperties("membresia")
+    @JsonIgnore
     private Plan plan;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario; 
-
-
 
 }

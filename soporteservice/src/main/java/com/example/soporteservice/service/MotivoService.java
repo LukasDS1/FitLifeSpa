@@ -2,6 +2,7 @@ package com.example.soporteservice.service;
 
 
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import com.example.soporteservice.model.Motivo;
@@ -15,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 public class MotivoService {
 
     private final MotivoRepository motivoRepository;
+
+    public List<Motivo> getAllMotivo(){
+        return motivoRepository.findAll();
+    }
 
     
     public Optional<Motivo> getMotivo(Long idMotivo){

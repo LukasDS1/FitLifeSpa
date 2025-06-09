@@ -1,5 +1,8 @@
 package com.example.usermanagement_service.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,6 +21,15 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
 
     private final RestTemplate restTemplate;
+
+
+    public List<Usuario> findAllUser(){
+        return usuarioRepository.findAll();
+    }
+
+    public Optional<Usuario> getbyId(Long idUsuario){
+        return usuarioRepository.findById(idUsuario);
+    }
 
     public String encrypt(String password){
         return passwordEncoder.encode(password);

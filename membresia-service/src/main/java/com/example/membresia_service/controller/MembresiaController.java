@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-
-
 @RestController
 @RequestMapping("/api-v1/membresia")
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class MembresiaController {
         }
     }
 
-    @GetMapping("/listarmembresia")
+    @GetMapping("/listallmembresia")
     public ResponseEntity<List<Membresia>> getAllMembresias() {
         try {
             return ResponseEntity.ok(membresiaService.getByAll());
@@ -46,7 +44,28 @@ public class MembresiaController {
         }
     }
 
-    @GetMapping("/listarid/{idMembresia}")
+    @GetMapping("plan/{idPlan}")
+    public ResponseEntity<List<Membresia>> getMembresiasByPlan(@PathVariable Long idPlan) {
+    List<Membresia> membresias = membresiaService.findMembresiasByPlanId(idPlan);
+    return ResponseEntity.ok(membresias);
+    }
+
+   @GetMapping("usuario/{idUsuario}")
+public ResponseEntity<?> getMembresiasPorUsuario(@PathVariable Long idUsuario) {
+    boolean existe = membresiaService.validarUsuario(idUsuario);
+    if (!existe) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario con ID " + idUsuario + " no existe.");
+    }
+
+    List<Membresia> membresias = membresiaService.findbyidUsuario(idUsuario);
+    if (membresias.isEmpty()) {
+        return ResponseEntity.ok("El usuario existe pero no tiene membresías asignadas.");
+    }
+
+    return ResponseEntity.ok(membresias);
+}
+
+    @GetMapping("/listid/{idMembresia}")
     public ResponseEntity<Membresia> getById(@PathVariable Long idMembresia) {
         try {
             Optional<Membresia> exist = membresiaService.findByid(idMembresia);
@@ -59,15 +78,20 @@ public class MembresiaController {
         }
     }
 
-    @DeleteMapping("/borrar/{idMembresia}")
-    public ResponseEntity<String> deleteMembresias(@PathVariable Long idMembresia) {
-        try {
-            membresiaService.deleteMembresia(idMembresia);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Membresia borrada con exito!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Membresia con ID: "+idMembresia+" no encontrada");
+  @DeleteMapping("/deletemembresia/{idMembresia}")  
+  public ResponseEntity<String> deleteMembresias(@PathVariable Long idMembresia) {
+    try {
+        boolean deleted = membresiaService.deleteMembresia(idMembresia);
+        if (deleted) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Membresía borrada con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Membresía con ID: " + idMembresia + " no encontrada");
         }
+    } catch (Exception e) {
+        e.printStackTrace(); 
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error técnico: " + e.getMessage());
     }
+}
 
     @PutMapping("/update")
     public ResponseEntity<Membresia> updateMembresia(@RequestBody Membresia membresia) {
@@ -77,8 +101,8 @@ public class MembresiaController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-
     }
+    
 
     @PutMapping("/assignplan")
     public ResponseEntity<String> assignPlan(@RequestBody Membresia membresia) {
@@ -94,16 +118,15 @@ public class MembresiaController {
         }
     }
 
-    @PutMapping("/assignuser")
-    public ResponseEntity<String> assignUser(@RequestBody Membresia membresia) {
-        try {
-            if(membresia.getUsuario().getEmail() == null){
-                return ResponseEntity.badRequest().body("Falta el email del usuario.");
-            }
-            membresiaService.assignUsuarioToMembership(membresia.getIdMembresia(),membresia.getUsuario().getEmail());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuario con Email"+membresia.getUsuario().getEmail()+" agregado con exito");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PutMapping("/assignuser/{idUsuario}")
+    public ResponseEntity<String> assignUser(@RequestBody Membresia membresia, @PathVariable Long idUsuario) {
+    try {
+        membresiaService.assignUsuarioToMembership(membresia.getIdMembresia(), idUsuario);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("Usuario con ID: " + idUsuario + " agregado con éxito a la membresía ID: " + membresia.getIdMembresia());
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
     }
+    }
+
 }

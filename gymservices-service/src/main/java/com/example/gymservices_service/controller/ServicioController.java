@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.gymservices_service.model.Servicio;
 import com.example.gymservices_service.service.ServicioService;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,12 +18,25 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 
+
+
 @RestController
 @RequestMapping("/api-v1/service")
 @RequiredArgsConstructor
 public class ServicioController {
 
     private final ServicioService servicioService;
+
+
+    @GetMapping("/listartodos")
+    public ResponseEntity<List<Servicio>> allservices() {
+        try {
+            return ResponseEntity.ok(servicioService.allServices());
+        } catch (Exception e) {       
+        return ResponseEntity.noContent().build();
+        }
+    }
+    
 
     @GetMapping("/exists/{idServicio}")
     public ResponseEntity<?> existsById(@PathVariable Long idServicio) {

@@ -20,42 +20,57 @@ public class ClaseService {
 
     private final ClaseRepository claseRepository;
     private final RestTemplate restTemplate;
+ 
+    public List<Clase> findByIDService(Long idServicio){  // TODO:dudoso
+        return claseRepository.findByIdServicio(idServicio);
+    }
 
     public List<Clase> getAllClases() {
         return claseRepository.findAll();
     }
-
-    public Optional<Clase> getClaseById(Long idClase) {
+    public Optional<Clase> getClaseById(Long idClase) { 
         return claseRepository.findById(idClase);
+
     }
 
     public Clase saveClase(Clase clase) {
-        if(validarServicio(clase)){
-        return claseRepository.save(clase);
+        try {
+            if(validarServicio(clase)){
+            return claseRepository.save(clase);
+            }
+            throw new RuntimeException("Servicio con ID: "+clase.getIdServicio()+" no encontrada.");
+        } catch (Exception e) {
+             throw new RuntimeException("Formato JSON invalido.");
         }
-        throw new RuntimeException();
     }
 
-    public Boolean deleteClase(Long idClase) {
+    public void deleteClase(Long idClase) {
         Optional<Clase> clase = claseRepository.findById(idClase);
-        if (clase.isEmpty()) {
-            return false;
+        try {
+            if (clase.isPresent()) {
+                claseRepository.deleteById(idClase);
+            }  
+            throw new RuntimeException("Clase con ID: " + idClase + " No encontrada!");
+        } catch (Exception e) {
+            throw new RuntimeException("Formato JSON invalido.");
         }
-        claseRepository.deleteById(idClase);
-        return true;
     }
+    
     
     public Clase updateClase(Long idClase, Clase clase) {
         Optional<Clase> clase1 = claseRepository.findById(idClase);
-        if (clase1.isEmpty()) {
-            throw new RuntimeException("Clase con ID: "+idClase+" No encontrada!"); 
-        } else {
-            Clase clase2 = clase1.get();
-            clase2.getIdClase();
-            clase2.setNombre(clase.getNombre());
-            clase2.setDescripcion(clase.getDescripcion());
-            clase2.setFechaClase(clase.getFechaClase());
-            return claseRepository.save(clase2);
+        try {
+            if (clase1.isPresent()) {
+                Clase clase2 = clase1.get();
+                clase2.getIdClase();
+                clase2.setNombre(clase.getNombre());
+                clase2.setDescripcion(clase.getDescripcion());
+                clase2.setFechaClase(clase.getFechaClase());
+                return claseRepository.save(clase2);    
+            } 
+            throw new RuntimeException("Clase con ID: "+ idClase + " No encontrada!");
+        } catch (Exception e) {
+            throw new RuntimeException("Formato JSON invalido.");
         }
     }
 
@@ -63,7 +78,7 @@ public class ClaseService {
         String url = "http://localhost:8085/api-v1/service/exists/{id}";
         try {
             @SuppressWarnings("rawtypes")
-            Map objeto = restTemplate.getForObject(url, Map.class, clase.getServicio().getIdServicio());
+            Map objeto = restTemplate.getForObject(url, Map.class, clase.getIdServicio());
 
             if (objeto == null || objeto.isEmpty()) {
                 throw new RuntimeException("El servicio no existe.");
@@ -74,9 +89,31 @@ public class ClaseService {
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener servicio " + e.getMessage());
         }
+    } 
+
+   public Map<String, Object> obtenerServicioDeClase(Long idClase) {
+    Clase clase = claseRepository.findById(idClase)
+        .orElseThrow(() -> new RuntimeException("Clase no encontrada con id: " + idClase));
+
+    Long idServicio = clase.getIdServicio();
+
+    String url = "http://localhost:8085/api-v1/service/exists/{id}";
+
+    try {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> servicio = restTemplate.getForObject(url, Map.class, idServicio);
+
+        if (servicio == null || servicio.isEmpty()) {
+            throw new RuntimeException("Servicio no encontrado.");
+        }
+
+        return servicio;
+
+    } catch (HttpClientErrorException.NotFound e) {
+        throw new RuntimeException("Servicio no encontrado.");
+    } catch (Exception e) {
+        throw new RuntimeException("Error al consultar servicio: " + e.getMessage());
     }
-
-
-    
+}
 
 }

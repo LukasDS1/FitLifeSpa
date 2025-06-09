@@ -16,20 +16,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoadToDataBase {
 
-
-
     @Bean
     CommandLineRunner initDatabase(PlanRepository planRepository, MembresiaRepository membresiaRepository){
         return args->{
             if( membresiaRepository.count() == 0 && planRepository.count() == 0){
 
-                Membresia bronze = new Membresia(null,"Bronze","Membresia de acceso limitado",null,null);
+                Membresia bronze = new Membresia(null,"Bronze","Membresia de acceso limitado",new ArrayList<>(100000000),null);
                 membresiaRepository.save(bronze);
 
-                Membresia silver = new Membresia(null,"Silver","Membresia con acceso medio",null,null);
+                Membresia silver = new Membresia(null,"Silver","Membresia con acceso medio",new ArrayList<>(100000000),null);
                 membresiaRepository.save(silver);
 
-                Membresia gold = new Membresia(null,"Gold","Membresia sin limitaciones",null,null);
+                Membresia gold = new Membresia(null,"Gold","Membresia sin limitaciones",new ArrayList<>(100000000),null);
                 membresiaRepository.save(gold);
 
                 Plan premium = new Plan(null, "Premium", "Plan premium", 200000, 365, new ArrayList<>());
@@ -49,7 +47,6 @@ public class LoadToDataBase {
 
                 gold.setPlan(premium);
                 membresiaRepository.save(gold);
-
 
             } else{
                 System.out.println("datos existentes, no se incertaron");

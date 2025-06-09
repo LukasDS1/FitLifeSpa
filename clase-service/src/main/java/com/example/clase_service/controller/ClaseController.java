@@ -1,6 +1,7 @@
 package com.example.clase_service.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -85,6 +87,14 @@ public class ClaseController {
         }
 
     }
+
+    @GetMapping("/servicio/{idClase}")
+    public ResponseEntity<Map<String, Object>> getServicioDeClase(@PathVariable Long idClase) {
+        Map<String, Object> servicio = claseService.obtenerServicioDeClase(idClase);
+        return ResponseEntity.ok(servicio);
+    }
+    
+    
 
 
 }

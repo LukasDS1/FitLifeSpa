@@ -62,6 +62,7 @@ public class ReservaService {
         }
     }
 
+
     public Boolean validarServicio (Reserva reserva){
         String url = "http://localhost:8085/api-v1/service/exists/{id}";
         try {
