@@ -58,4 +58,17 @@ public class InscripcionService {
             throw new RuntimeException("Error al obtener el cliente: " + e.getMessage());
         }
     }
+
+    public List<Inscripcion> listarIncripcionesPorEstado(Long id){
+        return inscripRepo.findByIdEstado(id);
+    }
+
+    public List<Inscripcion> listarIncripcionesPorClase(Long id){
+        return inscripRepo.FindByIdClase(id);
+    }
+
+    public List<Inscripcion> listarPorUsuario(Long id){
+        return inscripRepo.findByIdUsuario(id);
+    }
+    
 }

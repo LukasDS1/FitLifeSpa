@@ -41,6 +41,33 @@ public class InscripcionController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/inscripciones/usuario/{id}")
+    public ResponseEntity<List<Inscripcion>> findByIdUser(@PathVariable Long id){
+        List<Inscripcion> lista = inscriService.listarPorUsuario(id);
+        if (lista.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/inscripciones/clase/{id}")
+    public ResponseEntity<List<Inscripcion>> findByIdClass(@PathVariable Long id){
+        List<Inscripcion> lista = inscriService.listarIncripcionesPorClase(id);
+        if (lista.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/inscripciones/estado/{id}")
+    public ResponseEntity<List<Inscripcion>> listByStatus(@PathVariable Long id){
+        List<Inscripcion> lista = inscriService.listarIncripcionesPorEstado(id);
+        if (lista.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(lista);
+    }
+
     @PostMapping("/inscripciones")
     public ResponseEntity<Inscripcion> addInscripcion(@RequestBody Inscripcion inst){
         Estado estado = inst.getEstado();
@@ -67,6 +94,7 @@ public class InscripcionController {
             return ResponseEntity.ok(inscrip);
         } 
     }
+
 
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<?> deleteInscripcion(@PathVariable Long id){
