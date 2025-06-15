@@ -25,7 +25,7 @@ public class ReservaService {
     }
 
     public Reserva buscarPorId(Long id){
-        return reservaRepository.findById(id).get();
+        return reservaRepository.findById(id).orElse(null);
     }
 
     public Reserva agregarReserva(Reserva reserva){
