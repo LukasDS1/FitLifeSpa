@@ -28,25 +28,12 @@ public class UsuarioService {
         return passwordEncoder.encode(password);
     }
 
-    public List<Usuario> findAll(){
-    List<Usuario> exist = usuarioRepository.findAll();
-    if(exist.isEmpty()){
-        throw new EntityNotFoundException("No existen usuarios");
-    }
-    return exist;
-}
-
     public Usuario getByMail(String email) {
        Usuario usuario = usuarioRepository.findByEmail(email);
         if(usuario != null) {
             return usuario;
         }
         return null;
-    }
-
-    public void deleteByid(Long idUsuario){
-      Usuario exist = usuarioRepository.findById(idUsuario).orElseThrow(()-> new EntityNotFoundException(" Usuario con ID: " + idUsuario + " no existe."));
-      usuarioRepository.delete(exist);
     }
     
 
