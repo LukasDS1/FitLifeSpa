@@ -9,9 +9,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-    
+
    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
@@ -25,9 +28,32 @@ public class SecurityConfig {
             return http.build();
     }
 
-     @Bean
+    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    // TODO: Mover este código a login.
+
+    // private final UsuarioRepository usuarioRepository;
+    // @Bean
+    // public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    //     return config.getAuthenticationManager();
+    // }
+
+    // @Bean
+    // public AuthenticationProvider authenticationProvider() {
+    //     DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    //     authenticationProvider.setUserDetailsService(usuarioDetailService());
+    //     authenticationProvider.setPasswordEncoder(passwordEncoder());
+    //     return authenticationProvider;
+    // }
+
+    // @Bean
+    // public UserDetailsService usuarioDetailService() {
+    //     return username -> usuarioRepository.findByEmail(username)
+    //     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
+    // }
+
 
 }

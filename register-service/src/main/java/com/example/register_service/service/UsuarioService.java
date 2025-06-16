@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class UsuarioService {
+// Esta clase se encarga de la gestión de usuarios "CRUD".
     
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -50,6 +51,10 @@ public class UsuarioService {
     
 
     public Usuario saveUsuario(Usuario usuario){
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new RuntimeException("Usuario ya existente.");
+        }
+
         Usuario usuario1 = new Usuario();
         usuario1.setEmail(usuario.getEmail());
         usuario1.setNombre(usuario.getNombre());

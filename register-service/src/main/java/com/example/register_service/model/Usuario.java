@@ -1,6 +1,13 @@
 package com.example.register_service.model;
 
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,16 +19,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "usuario")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
-public class Usuario {
+public class Usuario implements UserDetails { // Using UserDetails for authorization later (with Spring Security)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuario;
@@ -58,4 +66,16 @@ public class Usuario {
     @JoinColumn(name = "idRol")
     @JsonIgnoreProperties("usuarios")
     private Rol rol;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(rol.getNombre()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+
 }
