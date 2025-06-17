@@ -27,11 +27,11 @@ public class Usuario {
     private Long idUsuario;
 
     @Column 
-    (nullable = false,length = 255,unique = true)
+    (nullable = false,length = 50,unique = true)
     private String email;
 
     @Column
-    (nullable = false,length = 200)
+    (nullable = false,length = 255)
     private String password;    
 
     @Column
@@ -47,7 +47,7 @@ public class Usuario {
     private String apellidoMaterno;
 
     @Column
-    (nullable = false,length = 10)
+    (nullable = false,length = 20)
     private String genero;
 
     @Column
