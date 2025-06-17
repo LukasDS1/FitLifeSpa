@@ -24,7 +24,11 @@ public class ReseniaService {
 
     public Resenia buscarId(Long id){
         return reseniaRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+        .orElseThrow(() -> new RuntimeException("Resenia no encontrada"));
+    }
+
+    public List<Resenia> buscarPorIdServicio(Long id){
+        return reseniaRepository.findByIdServicio(id);
     }
 
     public Boolean validarServicio (Resenia resenia){
