@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.reserva_service.model.estadoReserva;
+import com.example.reserva_service.model.EstadoReserva;
 import com.example.reserva_service.repository.estadoReservaRepository;
 
 import jakarta.transaction.Transactional;
@@ -22,22 +22,22 @@ public class estadoReservaService {
 
     private final RestTemplate client;
 
-    public List<estadoReserva> listarTodo(){
+    public List<EstadoReserva> listarTodo(){
         return estadoReservaRepo.findAll();
     }
 
-    public estadoReserva listarPorId(Long id){
+    public EstadoReserva listarPorId(Long id){
         return estadoReservaRepo.findById(id).get();
     }
 
-    public estadoReserva agregarEstadoReserva (estadoReserva estado){
+    public EstadoReserva agregarEstadoReserva (EstadoReserva estado){
         if (validarEstado(estado)) {
             return estadoReservaRepo.save(estado);
         }
         return null;
     }
 
-    public Boolean validarEstado (estadoReserva estado){
+    public Boolean validarEstado (EstadoReserva estado){
         String url = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
         try {
             @SuppressWarnings("rawtypes")

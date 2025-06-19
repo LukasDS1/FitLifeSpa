@@ -40,6 +40,14 @@ public class ReseniaController {
         }
     }
 
+    @GetMapping("/servicio/{id}")
+    public ResponseEntity<List<Resenia>> findReseniaByIdServicio(@PathVariable Long id){
+        List<Resenia> lista = reseniaService.buscarPorIdServicio(id);
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(lista);
+    }
 
     @PostMapping
     public ResponseEntity<?> addResenia(@RequestBody Resenia resenia){
@@ -51,7 +59,7 @@ public class ReseniaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteResenia(Long id){
+    public ResponseEntity<?> deleteResenia(@PathVariable Long id){
         Resenia resenias = reseniaService.buscarId(id);
         if (resenias == null) {
             return ResponseEntity.notFound().build();
