@@ -19,6 +19,11 @@ import com.example.inscripcion_service.service.ClaseService;
 import com.example.inscripcion_service.service.EstadoService;
 import com.example.inscripcion_service.service.InscripcionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,6 +37,11 @@ public class InscripcionController {
   
     private final ClaseService claseService;
 
+    @Operation(summary = "Permite obtener una lista con todas las inscripciones")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las reservas hechas", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @GetMapping("/inscripciones/total")
     public ResponseEntity<List<Inscripcion>> allInscripciones(){
         List<Inscripcion> lista = inscriService.listarInscripcion();
@@ -41,6 +51,11 @@ public class InscripcionController {
         return ResponseEntity.ok(lista);
     }
 
+    @Operation(summary = "Permite obtener una lista de inscripciones hechas por un usuario mediante su id")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las inscripciones hechas por un usuario", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @GetMapping("/inscripciones/usuario/{id}")
     public ResponseEntity<List<Inscripcion>> findByIdUser(@PathVariable Long id){
         List<Inscripcion> lista = inscriService.listarPorUsuario(id);
@@ -50,6 +65,11 @@ public class InscripcionController {
         return ResponseEntity.ok(lista);
     }
 
+    @Operation(summary = "Permite obtener una lista de inscripciones con una clase en especifico")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las inscripciones que tengan la clase buscada", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @GetMapping("/inscripciones/clase/{id}")
     public ResponseEntity<List<Inscripcion>> findByIdClass(@PathVariable Long id){
         List<Inscripcion> lista = inscriService.listarIncripcionesPorClase(id);
@@ -59,6 +79,11 @@ public class InscripcionController {
         return ResponseEntity.ok(lista);
     }
 
+    @Operation(summary = "Permite obtener una lista de inscripciones mediante su estado")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las inscripciones que tengan el estado buscado", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @GetMapping("/inscripciones/estado/{id}")
     public ResponseEntity<List<Inscripcion>> listByStatus(@PathVariable Long id){
         List<Inscripcion> lista = inscriService.listarIncripcionesPorEstado(id);
@@ -68,6 +93,11 @@ public class InscripcionController {
         return ResponseEntity.ok(lista);
     }
 
+    @Operation(summary = "Permite hacer una inscripcion")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="201", description = "la inscripcion se registra correctamente y devolvera la misma inscripcion", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "400", description = "si no existe estado, clase, o hubo un error, no arrojara nada", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @PostMapping("/inscripciones")
     public ResponseEntity<Inscripcion> addInscripcion(@RequestBody Inscripcion inst){
         Estado estado = inst.getEstado();
@@ -85,6 +115,11 @@ public class InscripcionController {
         }
     }
 
+    @Operation(summary = "Permite obtener una inscripcion mediante su ID")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Genera una inscripcion con la ID buscada", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "404", description = "En caso de no existir, devolvera un mensaje", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @GetMapping("/inscripciones/{id}") 
     public ResponseEntity<?> findInscById(@PathVariable Long id){
         if (inscriService.validacion(id) == false) {
@@ -95,7 +130,12 @@ public class InscripcionController {
         } 
     }
 
-
+    @Operation(summary = "Permite eliminar una inscripcion mediante su id")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="204", description = "eliminara la inscripcion y devolvera NoContent", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "404", description = "En caso de no existir devolvera un mensaje", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "400", description = "En caso de ocurrir un error, devolvera BadRequest", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<?> deleteInscripcion(@PathVariable Long id){
         if(inscriService.validacion(id) == false){
@@ -110,6 +150,11 @@ public class InscripcionController {
         }
     }
 
+    @Operation(summary = "Permite actualizar una inscripcion mediante su id")
+    @ApiResponses(value ={
+        @ApiResponse(responseCode ="200", description = "Actualiza los datos de la inscripcion y devuelve la inscripcion nueva", content = @Content(schema = @Schema(implementation = Inscripcion.class))),
+        @ApiResponse(responseCode = "404", description = "En caso de error, devolvera 400, bad request", content = @Content(schema = @Schema(implementation = Inscripcion.class)))
+    } )
     @PutMapping("/inscripciones/{id}")
     public ResponseEntity<Inscripcion> updateInscripcion (@PathVariable Long id, @RequestBody Inscripcion insc){
         try {
