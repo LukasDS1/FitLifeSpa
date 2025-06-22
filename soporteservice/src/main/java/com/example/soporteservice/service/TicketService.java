@@ -8,6 +8,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.example.soporteservice.model.Ticket;
 import com.example.soporteservice.repository.TicketRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -27,22 +29,24 @@ public class TicketService {
         return ticketRepository.findById(idTicket);
     }
 
+    public Ticket createTicket(Ticket ticket) {
+    if (!validarUsuario(ticket.getIdUsuario())) {
+        throw new RuntimeException("Usuario no encontrado.");
+    }
 
-    public Ticket createTicket(Ticket ticket){
-        if(validarUsuario(ticket.getIdUsuario()) != null){
-            if(validarEstado(ticket.getIdEstado()) != null){
-                Long estado = ticket.getIdEstado();
-                ticket.setIdEstado(estado);
-                return ticketRepository.save(ticket);
-            }
-             throw new RuntimeException("Email no encontrado.");
-        }
-         throw new RuntimeException("Estado no encontrado o no válido.");
+    if (!validarEstado(ticket.getIdEstado())) {
+        throw new RuntimeException("Estado no encontrado o no válido.");
+    }
+
+    return ticketRepository.save(ticket);
+
     }
 
     public List<Ticket> findbyidUsuario(Long idUsuario){
     return ticketRepository.findByIdUsuario(idUsuario);
     }
+
+
 
     public Boolean validarUsuario(Long idUsuario){
         String url = "http://localhost:8082/api-v1/register/exists/{id}";
@@ -63,32 +67,45 @@ public class TicketService {
         }
     }
 
+   public String obtenerEstadoDelTicket(Long idTicket) {
+    Optional<Ticket> ticketOptional = ticketRepository.findById(idTicket);
+    if (ticketOptional.isEmpty()) {
+        throw new EntityNotFoundException("No se encontró el ticket con ID " + idTicket);
+    }
 
-   public String validarEstado(Long idEstado) {
+    Ticket ticket = ticketOptional.get();
+    Long idEstado = ticket.getIdEstado();
+
     String url = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
 
     try {
-        Map<?, ?> objeto = restTemplate.getForObject(url, Map.class, idEstado);
-
-        if (objeto == null || objeto.isEmpty()) {
-            throw new RuntimeException("El estado no existe");
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class, idEstado);
+        if (response == null || !response.containsKey("nombre")) {
+            throw new RuntimeException("No se pudo obtener el estado del ticket");
         }
 
-        Object idObject = objeto.get("idEstado"); 
-        if (idObject == null) {
-            throw new RuntimeException("El estado no contiene ID");
-        }
-
-        Long estadoId = Long.valueOf(idObject.toString());
-
-        return estadoId == 1 ? "Activo" : "Inactivo";
-
+        return response.get("nombre").toString();
     } catch (HttpClientErrorException.NotFound e) {
-        throw new RuntimeException("El estado no existe");
+        throw new EntityNotFoundException("Estado no encontrado con ID " + idEstado);
     } catch (Exception e) {
-        throw new RuntimeException("Error al obtener el estado: " + e.getMessage());
+        throw new RuntimeException("Error al consultar el estado: " + e.getMessage());
     }
 }
+
+public boolean validarEstado(Long idEstado) {
+    String url = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
+
+    try {
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class, idEstado);
+        return response != null && response.containsKey("nombre");
+    } catch (HttpClientErrorException.NotFound e) {
+        return false;
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+
 
 
 

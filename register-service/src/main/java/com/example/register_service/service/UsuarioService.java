@@ -1,9 +1,5 @@
 package com.example.register_service.service;
 
-
-
-
-
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;

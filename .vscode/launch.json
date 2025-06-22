@@ -119,6 +119,16 @@
             "projectName": "resena-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UsermanagmentServiceApplication<usermanagment>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.usermanagment.UsermanagmentServiceApplication",
+            "projectName": "usermanagment",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

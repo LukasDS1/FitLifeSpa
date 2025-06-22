@@ -3,12 +3,15 @@ package com.example.membresia_service.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.membresia_service.model.Membresia;
 import com.example.membresia_service.model.Plan;
 import com.example.membresia_service.repository.PlanRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -31,41 +34,47 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public Plan updatePlan(Plan plan){
-        Optional<Plan> exist = planRepository.findById(plan.getIdPlan());
-        if(exist.isEmpty()){
-            throw new RuntimeException("ID plan no puede ser nulo");
+    public Plan updatePlan(Plan plan) {
+        Plan plan2 = planRepository.findById(plan.getIdPlan())
+                .orElseThrow(() -> new EntityNotFoundException("Plan inexistente"));
+
+        if (plan.getNombre() != null && !plan.getNombre().trim().isEmpty()) {
+            plan2.setNombre(plan.getNombre());
         }
-        Plan plan2 = exist.get();
-        plan2.setNombre(plan.getNombre());
-        plan2.setCosto(plan.getCosto());
-        plan2.setDescripcion(plan.getDescripcion());
-        plan2.setDuracion(plan.getDuracion());
-        plan2.setMembresia(plan.getMembresia());
+
+        if (plan.getDescripcion() != null && !plan.getDescripcion().trim().isEmpty()) {
+            plan2.setDescripcion(plan.getDescripcion());
+        }
+
+        if (plan.getCosto() != null) {
+            plan2.setCosto(plan.getCosto());
+        }
+
+        if (plan.getDuracion() != null) {
+            plan2.setDuracion(plan.getDuracion());
+        }
+
+        if (plan.getMembresia() != null && !plan.getMembresia().isEmpty()) {
+            for (Membresia m : plan.getMembresia()) {
+                m.setPlan(plan2); 
+            }
+            plan2.setMembresia(plan.getMembresia()); 
+        }
         return planRepository.save(plan2);
     }
 
-    public Boolean delete(Long idPlan) {
-        Optional<Plan> exist = planRepository.findById(idPlan);
-        try {
-            if (exist.isEmpty()) {
-                return false;
-            } else {
-                planRepository.deleteById(idPlan);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("");
-        }
-
+    public void delete (Long idPlan){
+       Plan plan2 = planRepository.findById(idPlan).orElseThrow(() -> new EntityNotFoundException("Plan inexistente"));
+       planRepository.delete(plan2);
     }
 
     public List<Membresia> getMembresiasByPlanId(Long idPlan) {
         Plan plan = planRepository.findById(idPlan)
-                .orElseThrow(() -> new RuntimeException("Plan no encontrado con ID: " + idPlan));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Plan no encontrado con ID: " + idPlan));
 
         List<Membresia> membresias = plan.getMembresia();
         return membresias;
     }
+
 
 }

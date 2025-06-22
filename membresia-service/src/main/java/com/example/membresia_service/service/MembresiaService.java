@@ -1,5 +1,6 @@
 package com.example.membresia_service.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,8 @@ import com.example.membresia_service.model.Membresia;
 import com.example.membresia_service.model.Plan;
 import com.example.membresia_service.repository.MembresiaRepository;
 import com.example.membresia_service.repository.PlanRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 @Service
@@ -30,6 +33,7 @@ public class MembresiaService {
 
     }
 
+
     public List<Membresia> findMembresiasByPlanId(Long idPlan) {
     return membresiaRepository.findByPlan_IdPlan(idPlan);
     }
@@ -38,14 +42,29 @@ public class MembresiaService {
     return membresiaRepository.findByUsuarioId(idUsuario);
     }
 
-    public Optional<Membresia> getMembresiaById(Long idMembresia) {
-        return membresiaRepository.findById(idMembresia);
-    }
 
     public Membresia saveMembresia(Membresia membresia) {
-        return membresiaRepository.save(membresia);
-    }
+        if (membresia.getPlan() == null || membresia.getPlan().getIdPlan() == null) {
+            throw new IllegalArgumentException("El plan no puede ser nulo");
+        }
+        boolean planExiste = planRepository.existsById(membresia.getPlan().getIdPlan());
+        if (!planExiste) {
+            throw new IllegalArgumentException("El plan especificado no existe.");
+        }
+         if (membresia.getIdUsuario() == null ) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
+        if (membresia.getIdUsuario() != null) {
+            for (Long idUsuario : membresia.getIdUsuario()) {
+                if (!validateUser(idUsuario)) {
+                    throw new IllegalArgumentException("El usuario con ID " + idUsuario + " no existe.");
+                }
+            }
+        }
 
+        return membresiaRepository.save(membresia);
+        
+    }
     public Boolean deleteMembresia(Long idMembresia) {
         try {
             Optional<Membresia> exist = membresiaRepository.findById(idMembresia);
@@ -89,19 +108,29 @@ public class MembresiaService {
         return false;
     }
 }
+    
+public Membresia UpdateUserById(Membresia membresia) {
 
-    public Membresia updatMembresia(Membresia membresia) {
-        Optional<Membresia> exist = membresiaRepository.findById(membresia.getIdMembresia());
-        if (exist.isEmpty()) {
-            throw new RuntimeException();
-        } else {
-            Membresia membresia2 = exist.get();
-            membresia2.getIdMembresia();
-            membresia2.setNombre(membresia.getNombre());
-            membresia2.setDescripcion(membresia.getDescripcion());
-            membresia2.setPlan(membresia.getPlan());
-            return membresiaRepository.save(membresia2);
-        }
+    Membresia membresia2 = membresiaRepository.findById(membresia.getIdMembresia())
+            .orElseThrow(() -> new EntityNotFoundException("Membresia inexistente"));
+
+    if (membresia.getNombre() != null && !membresia.getNombre().trim().isEmpty()) {
+        membresia2.setNombre(membresia.getNombre());
+    }
+
+    if (membresia.getDescripcion() != null && !membresia.getDescripcion().trim().isEmpty()) {
+        membresia2.setDescripcion(membresia.getDescripcion());
+    }
+
+    if (membresia.getPlan() != null) {
+        membresia2.setPlan(membresia.getPlan());
+    }
+
+    if (membresia.getIdUsuario() != null && !membresia.getIdUsuario().isEmpty()) {
+        membresia2.setIdUsuario(new ArrayList<>(membresia.getIdUsuario())); 
+    }
+
+    return membresiaRepository.save(membresia2);
 
     }
 
@@ -127,5 +156,35 @@ public class MembresiaService {
     }
     return membresiaRepository.save(membresia);
     }
+
+
+   
+
+
+    public Membresia deleteUsersFromMembresia (Long idMembresia, Long idUsuario){
+
+        Membresia membresia = membresiaRepository.findById(idMembresia).orElseThrow(()
+        -> new EntityNotFoundException("Membresia con ID: "+idMembresia + " no encontrada" ));
+
+        if (!validarUsuario(idUsuario)) {
+        throw new EntityNotFoundException("El usuario con ID: " + idUsuario + " no existe.");
+        }
+        if (membresia.getIdUsuario().contains(idUsuario)) {
+        membresia.getIdUsuario().remove(idUsuario);
+        } else{
+             throw new EntityNotFoundException("El usuario con ID: " + idUsuario + " no está en la membresía.");
+        }
+        return membresiaRepository.save(membresia);
+
+        }
+
+
+
+        
+
+
+
+
+    
 
 }

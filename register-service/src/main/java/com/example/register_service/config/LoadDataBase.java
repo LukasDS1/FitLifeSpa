@@ -94,6 +94,28 @@ public class LoadDataBase {
                 "12349865-1", cli);
                 usuarioRepository.save(user);
 
+                Usuario user2 = new Usuario(
+                null, 
+                "usuario2@gmail.com", 
+                passwordEncoder.encode("1210"), 
+                "usuario2", 
+                "appa6", 
+                "apma6", 
+                "Masculino", 
+                "87654345-9", cli);
+                usuarioRepository.save(user2);
+
+                Usuario user3 = new Usuario(
+                null, 
+                "usuario3@gmail.com", 
+                passwordEncoder.encode("1012"), 
+                "usuario3", 
+                "appa7", 
+                "apma7", 
+                "Femenino", 
+                "98761234-7", cli);
+                usuarioRepository.save(user3);
+
             }else{
                 System.out.println("Datos ya existen. No se cargaron.");
             }
