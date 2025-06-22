@@ -14,6 +14,7 @@ import com.example.resena_service.model.Resenia;
 import com.example.resena_service.service.ReseniaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,8 +30,8 @@ public class ReseniaController {
 
     @Operation(summary = "Permite obtener una lista con todas las Reservas")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las resenias hechas", content = @Content(schema = @Schema(implementation = Resenia.class))),
-        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Resenia.class)))
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las resenias hechas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Resenia.class)))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping("/total")
     public ResponseEntity<List<Resenia>> findAllResenias(){
@@ -44,7 +45,7 @@ public class ReseniaController {
     @Operation(summary = "Permite obtener una resenia mediante su id")
     @ApiResponses(value ={
         @ApiResponse(responseCode ="200", description = "Genera una resenia hecha con su id", content = @Content(schema = @Schema(implementation = Resenia.class))),
-        @ApiResponse(responseCode = "404", description = "En caso de no encontrarla, no arrojara nada.", content = @Content(schema = @Schema(implementation = Resenia.class)))
+        @ApiResponse(responseCode = "404", description = "En caso de no encontrarla, no arrojara nada.")
     } )
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
@@ -58,8 +59,8 @@ public class ReseniaController {
 
     @Operation(summary = "Permite obtener una lista con las resenias de un servicio")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Genero una lista con las resenias del servicio mediante su id", content = @Content(schema = @Schema(implementation = Resenia.class))),
-        @ApiResponse(responseCode = "204", description = "Si la lista esta vacia no devolvera nada", content = @Content(schema = @Schema(implementation = Resenia.class)))
+        @ApiResponse(responseCode ="200", description = "Genero una lista con las resenias del servicio mediante su id", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Resenia.class)))),
+        @ApiResponse(responseCode = "204", description = "Si la lista esta vacia no devolvera nada")
     } )
     @GetMapping("/servicio/{id}")
     public ResponseEntity<List<Resenia>> findReseniaByIdServicio(@PathVariable Long id){
@@ -73,7 +74,7 @@ public class ReseniaController {
     @Operation(summary = "Permite agregar una resenia")
     @ApiResponses(value ={
         @ApiResponse(responseCode ="201", description = "Se agrega la resenia y devuelve la misma resenia", content = @Content(schema = @Schema(implementation = Resenia.class))),
-        @ApiResponse(responseCode = "400", description = "En caso de error devolvera un mensaje", content = @Content(schema = @Schema(implementation = Resenia.class)))
+        @ApiResponse(responseCode = "400", description = "En caso de error devolvera un mensaje")
     } )
     @PostMapping
     public ResponseEntity<?> addResenia(@RequestBody Resenia resenia){
@@ -87,8 +88,8 @@ public class ReseniaController {
 
     @Operation(summary = "Permite eliminar una resenia")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Se elimina la resenia y devuelve un mensaje", content = @Content(schema = @Schema(implementation = Resenia.class))),
-        @ApiResponse(responseCode = "404", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Resenia.class)))
+        @ApiResponse(responseCode ="200", description = "Se elimina la resenia y devuelve un mensaje"),
+        @ApiResponse(responseCode = "404", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteResenia(@PathVariable Long id){

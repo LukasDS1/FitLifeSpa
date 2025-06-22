@@ -34,10 +34,10 @@ public class LoadDataBase {
                 Modulo reserva = new Modulo(null,"Reserva", new ArrayList<>());
                 modRepo.save(reserva);
 
-                Privileges delete = new Privileges(null,null,activo,UserManagement);
+                Privileges delete = new Privileges(null,true, null,activo,UserManagement);
                 privRepo.save(delete);
 
-                Privileges reservar = new Privileges(null, null, activo, reserva);
+                Privileges reservar = new Privileges(null, true, null, activo, reserva);
                 privRepo.save(reservar);
 
                 System.out.println("Datos cargados correctamente");

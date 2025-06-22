@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,16 +22,20 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "Los roles dentro del sistema de fitlifespa")
 public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID unico del rol")
     private Long idRol;
 
     @Column
     (nullable=false,length = 20)
+    @Schema(description = "Nombre del rol")
     private String nombre;
 
     @OneToMany(mappedBy = "rol",cascade = CascadeType.ALL)
     @JsonIgnore
+    @Schema(description = "Que privilegios tiene el rol")
     List<Privileges> privilegios;
 }

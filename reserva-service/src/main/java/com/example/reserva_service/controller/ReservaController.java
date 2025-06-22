@@ -19,6 +19,7 @@ import com.example.reserva_service.service.ReservaService;
 import com.example.reserva_service.service.estadoReservaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,8 +36,8 @@ public class ReservaController {
 
     @Operation(summary = "Permite obtener una lista con todas las Reservas")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las reservas disponibles", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las reservas disponibles", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Reserva.class)))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping
     public ResponseEntity<List<Reserva>> findAll(){
@@ -50,7 +51,7 @@ public class ReservaController {
     @Operation(summary = "Permite obtener una Reserva mediante su ID unica")
     @ApiResponses(value ={
         @ApiResponse(responseCode ="200", description = "Genera una Reserva que fue buscada por su ID", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "404", description = "No devolvera nada ya que no encontro una Reserva con esa ID", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode = "404", description = "No devolvera nada ya que no encontro una Reserva con esa ID")
     } )
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> findByIdReserva(@PathVariable Long id){
@@ -64,8 +65,8 @@ public class ReservaController {
 
     @Operation(summary = "Permite obtener una lista con las Reserva de un usuario mediante su ID")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las reservas disponibles mediante la ID del usuario", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Genero una lista con todas las reservas disponibles mediante la ID del usuario", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Reserva.class)))),
+        @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping("/usuario/{id}")
     public ResponseEntity<List<Reserva>> findByidUser(@PathVariable Long id){
@@ -79,7 +80,7 @@ public class ReservaController {
     @Operation(summary = "Permite Agregar una reserva")
     @ApiResponses(value ={
         @ApiResponse(responseCode ="201", description = "Agrega una reserva a la base de datos y devolvera el objeto Reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "400", description = "En caso de un error o ya existir la reserva, devolvera BadRequest", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode = "400", description = "En caso de un error o ya existir la reserva, devolvera BadRequest")
     } )
     @PostMapping("/add")
     public ResponseEntity<?> addReserva(@RequestBody Reserva reserva) {
@@ -93,7 +94,7 @@ public class ReservaController {
     @Operation(summary = "Permite actualizar una reserva existente con su ID")
     @ApiResponses(value ={
         @ApiResponse(responseCode ="200", description = "Actualiza los datos de la reserva y devuelve el objeto Reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "400", description = "En caso de error arrojara Bad Request", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode = "400", description = "En caso de error arrojara Bad Request")
     } )
     @PutMapping("/update/{id}")
     public ResponseEntity<Reserva> updateReserva(@RequestBody Reserva reserva, @PathVariable Long id){
@@ -121,8 +122,8 @@ public class ReservaController {
 
     @Operation(summary = "Permite eliminar una reserva existente mediante su id")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Se borra la reserva con su id y devuelve un mensaje confirmando la eliminacion", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "404", description = "En caso de no existir, arrojara un mensaje especificandolo", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Se borra la reserva con su id y devuelve un mensaje confirmando la eliminacion"),
+        @ApiResponse(responseCode = "404", description = "En caso de no existir, arrojara un mensaje especificandolo")
     } )
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteReserva (@PathVariable Long id){
@@ -137,8 +138,8 @@ public class ReservaController {
 
     @Operation(summary = "Permite eliminar el estado de una reserva")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Se elimina el estado de la reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "404", description = "En caso de no existir, arrojara not found", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Se elimina el estado de la reserva"),
+        @ApiResponse(responseCode = "404", description = "En caso de no existir, arrojara not found")
     } )
     @DeleteMapping("/estados/delete/{id}")
     public ResponseEntity<?> deleteEstadoReserva (@PathVariable Long id){
@@ -152,8 +153,8 @@ public class ReservaController {
 
     @Operation(summary = "Permite objeter una lista de los estados de reserva")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Genera una lista con todos los estados de reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "204", description = "en caso de no encontrar, arroja una lista vacia", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Genera una lista con todos los estados de reserva", content = @Content(array = @ArraySchema(schema = @Schema(implementation = EstadoReserva.class)))),
+        @ApiResponse(responseCode = "204", description = "en caso de no encontrar, arroja una lista vacia")
     } )
     @GetMapping("/estados")
     public ResponseEntity<List<EstadoReserva>> listarTodos() {
@@ -167,8 +168,8 @@ public class ReservaController {
     
     @Operation(summary = "Permite objeter un estado de reserva mediante su id")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="200", description = "Se genera un objeto de Estado Reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "204", description = "en caso de no encontrar, no devolvera nada", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="200", description = "Se genera un objeto de Estado Reserva", content = @Content(schema = @Schema(implementation = EstadoReserva.class))),
+        @ApiResponse(responseCode = "204", description = "en caso de no encontrar, no devolvera nada")
     } )
     @GetMapping("/estados/{id}")
     public ResponseEntity<EstadoReserva> obtenerEstadoPorId(@PathVariable Long id) {
@@ -182,8 +183,8 @@ public class ReservaController {
 
     @Operation(summary = "agregar un estado de reserva nuevo")
     @ApiResponses(value ={
-        @ApiResponse(responseCode ="201", description = "Se agrega el objeto, y devolvera el estado de reserva", content = @Content(schema = @Schema(implementation = Reserva.class))),
-        @ApiResponse(responseCode = "400", description = "en caso de error, no agregara nada", content = @Content(schema = @Schema(implementation = Reserva.class)))
+        @ApiResponse(responseCode ="201", description = "Se agrega el objeto, y devolvera el estado de reserva", content = @Content(schema = @Schema(implementation = EstadoReserva.class))),
+        @ApiResponse(responseCode = "400", description = "en caso de error, no agregara nada")
     } )
     @PostMapping("/estados")
     public ResponseEntity<EstadoReserva> agregarEstadoReserva(@RequestBody EstadoReserva estado) {
