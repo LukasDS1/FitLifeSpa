@@ -1,5 +1,7 @@
 package com.example.usermanagment.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +35,8 @@ public class UsuarioDTO {
     
     @Schema(description = "Rut del usuario")
     private String rut;
+    @JsonProperty("rol")
+    @Schema(description = "Rol al que peternece el usuario")
+    private RolDTO rol;
 
 }

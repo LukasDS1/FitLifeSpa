@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.usermanagment.dto.RolDTO;
 import com.example.usermanagment.dto.UsuarioDTO;
 import com.example.usermanagment.service.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,8 @@ public class UsermanagmentControllerTest {
 
     @Test
     void getAllUsers_returnsOKJson(){
-        List<UsuarioDTO> usuarios = Arrays.asList(new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345"));
+        RolDTO rolDTO = new RolDTO(1L, "Cliente");
+        List<UsuarioDTO> usuarios = Arrays.asList(new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345",rolDTO));
 
         when(usuarioService.listAllUsers()).thenReturn(usuarios);
        try {
@@ -54,8 +56,8 @@ public class UsermanagmentControllerTest {
     @Test 
     void getUserbyID_returnsOKJSON(){
         Long idUsuario = 10L;
-        
-        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345");
+        RolDTO rolDTO = new RolDTO(1L, "Cliente");
+        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345",rolDTO);
 
         when(usuarioService.findByID(idUsuario)).thenReturn(usuario1);
 
@@ -85,9 +87,9 @@ public class UsermanagmentControllerTest {
     @Test
     void updateUserById_returnsOKJSON(){
         Long idUsuario = 10L;
-
-        UsuarioDTO usuarioAntiguo = new UsuarioDTO(10L, "test1@gmail.com", "pass1", "test2", "test1", "test1", "genero1", "12345");
-        UsuarioDTO usuarioNuevo = new UsuarioDTO(10L, "test2@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345");
+        RolDTO rolDTO = new RolDTO(1L, "Cliente");
+        UsuarioDTO usuarioAntiguo = new UsuarioDTO(10L, "test1@gmail.com", "pass1", "test2", "test1", "test1", "genero1", "12345",rolDTO);
+        UsuarioDTO usuarioNuevo = new UsuarioDTO(10L, "test2@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345",rolDTO);
 
         when(usuarioService.updateUser(eq(idUsuario), any(UsuarioDTO.class))).thenReturn(usuarioNuevo);
 

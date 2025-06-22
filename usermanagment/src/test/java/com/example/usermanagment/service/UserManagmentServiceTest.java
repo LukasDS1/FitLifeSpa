@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.usermanagment.dto.RolDTO;
 import com.example.usermanagment.dto.UsuarioDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,8 +30,9 @@ public class UserManagmentServiceTest {
 
     @Test
     void listReturnallusers(){
-        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345");
-        UsuarioDTO usuario2 = new UsuarioDTO(11L, "test2@gmail.com", "pass2", "test2", "test2", "test2", "genero2", "54321");
+        RolDTO rolDTO = new RolDTO(1L, "Cliente");
+        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345",rolDTO);
+        UsuarioDTO usuario2 = new UsuarioDTO(11L, "test2@gmail.com", "pass2", "test2", "test2", "test2", "genero2", "54321",rolDTO);
 
         UsuarioDTO[] usuarios = new UsuarioDTO[]{usuario1,usuario2};
 
@@ -44,7 +46,8 @@ public class UserManagmentServiceTest {
     @Test
     void fidbyidReturUser(){
         Long idUsuario = 10L;
-        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345");
+        RolDTO rolDTO = new RolDTO(1L, "Cliente");
+        UsuarioDTO usuario1 = new UsuarioDTO(10L, "test@gmail.com", "pass1", "test1", "test1", "test1", "genero1", "12345",rolDTO);
         
         when(restTemplate.getForObject("http://localhost:8082/api-v1/register/exists/{idUsuario}", UsuarioDTO.class, idUsuario)).thenReturn(usuario1);
 
