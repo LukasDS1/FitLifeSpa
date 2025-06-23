@@ -19,6 +19,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
+    private final String url_register_service = "http://localhost:8082/api-v1/register";
 
     // Manejar error al conseguir usuario por email, para evitar excepciones (error 500)
     // Conseguir objeto de usuario conectandose al microservicio de registro.
@@ -27,10 +28,10 @@ public class UsuarioService {
         Usuario usuarioRequest = new Usuario(); // Crea la request donde se guarda un objeto Usuario.
         usuarioRequest.setEmail(email); // agrega la información que se enviará para la request (email)
         
-        String url_register_service = "http://localhost:8082/api-v1/register/exists"; // url que devuelve un objeto Usuario
+        String url = url_register_service + "/exists"; // url que devuelve un objeto Usuario
         
         try { // define los parámetros necesarios para el restTemplate (url, request con la info, respuesta de register)
-            Usuario usuarioResponse = restTemplate.postForObject(url_register_service, usuarioRequest, Usuario.class);
+            Usuario usuarioResponse = restTemplate.postForObject(url, usuarioRequest, Usuario.class);
             return usuarioResponse; // Devuelve el objeto de Usuario para ser utilizado después.
         } catch (HttpClientErrorException e) { // prevee errores del lado de register (al no encontrar al usuario)
             return null;
@@ -62,5 +63,7 @@ public class UsuarioService {
     public String encrypt(String rawPasswd) {
         return passwordEncoder.encode(rawPasswd);
     }
+
+
 
 }
