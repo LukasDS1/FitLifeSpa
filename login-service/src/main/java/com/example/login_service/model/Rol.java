@@ -1,36 +1,18 @@
 package com.example.login_service.model;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "rol")
+@Schema(description = "DTO para la clase rol, representa el rol del usuario")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Rol {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único del rol")
     private Long idRol;
 
-    @Column(nullable = false, length = 20)
+    @Schema(description = "Nombre del rol")
     private String nombre;
-
-        // Relación de tabla rol a usuario
-    @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
-    @JsonIgnore // No se incluyen los datos asociados a los roles
-    List<Usuario> usuarios;
 }

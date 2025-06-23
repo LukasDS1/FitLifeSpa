@@ -21,7 +21,7 @@ public class ClaseService {
     private final ClaseRepository claseRepository;
     private final RestTemplate restTemplate;
  
-    public List<Clase> findByIDService(Long idServicio){  // TODO:dudoso
+    public List<Clase> findByIDService(Long idServicio){
         return claseRepository.findByIdServicio(idServicio);
     }
 
@@ -49,8 +49,9 @@ public class ClaseService {
         try {
             if (clase.isPresent()) {
                 claseRepository.deleteById(idClase);
+            } else {
+                throw new RuntimeException("Clase con ID: " + idClase + " No encontrada!");
             }  
-            throw new RuntimeException("Clase con ID: " + idClase + " No encontrada!");
         } catch (Exception e) {
             throw new RuntimeException("Formato JSON invalido.");
         }

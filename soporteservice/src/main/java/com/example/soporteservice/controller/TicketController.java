@@ -35,9 +35,9 @@ public class TicketController {
 
     @Operation( summary = "Este endpoint permite filtrar los tickets pertenecientes a un usuario" )
     @ApiResponses(value = { @ApiResponse(responseCode = "404",description = "NOT FOUND: Indica que no ha encontrado al usuario",
-    content = @Content(schema = @Schema(implementation = Ticket.class))),
+    content = @Content(schema = @Schema(implementation = String.class))),
     @ApiResponse(responseCode = "202",description = "ACCEPTED: Indica que el usuario ha sido encontrado pero no tiene tickets asignados ",
-    content = @Content(schema = @Schema(implementation = Ticket.class))),
+    content = @Content(schema = @Schema(implementation = String.class))),
     @ApiResponse(responseCode = "200",description = "OK: Indica que el usuario ha sido encontrado y muestra los tickets que tiene asignados ",
     content = @Content(schema = @Schema(implementation = Ticket.class)))
     }
@@ -57,7 +57,7 @@ public class TicketController {
 
     @Operation( summary = "Este endpoint permite consultar el estado del ticket (Activo/Inactivo)" )
     @ApiResponses(value = { @ApiResponse(responseCode = "404",description = "NOT FOUND: Indica que no se ha encontrado el estado",
-    content = @Content(schema = @Schema(implementation = Ticket.class))),
+    content = @Content(schema = @Schema(implementation = String.class))),
     @ApiResponse(responseCode = "200",description = "OK: Indica que el estado ha sido encontrado y muestra el estado del ticket",
     content = @Content(schema = @Schema(implementation = Ticket.class)))
     }
@@ -76,9 +76,9 @@ public class TicketController {
 
     @Operation( summary = "Este endpoint permite crear un ticket" )
     @ApiResponses(value = { @ApiResponse(responseCode = "400",description = "BAD REQUEST: Indica que la peticion ha sido mal estructurada o por que falta(n) algun dato ",
-    content = @Content(schema = @Schema(implementation = Ticket.class))),
+    content = @Content(schema = @Schema(implementation = String .class))),
     @ApiResponse(responseCode = "201",description = "CREATED: Indica ticket ha sido creado exitosamente",
-    content = @Content(schema = @Schema(implementation = Ticket.class)))
+    content = @Content(schema = @Schema(implementation = String.class)))
     }
     )
         @PostMapping("/creartk")
@@ -110,7 +110,7 @@ public class TicketController {
         
         @Operation( summary = "Este endpoint permite listar todos los tickets" )
         @ApiResponses(value = { @ApiResponse(responseCode = "204",description = "NO CONTENT: Indica que no hay tickets creados ",
-        content = @Content(schema = @Schema(implementation = Ticket.class))),
+        content = @Content(schema = @Schema(implementation = String.class))),
         @ApiResponse(responseCode = "200",description = "OK: Indica ticket que existen tickets",
         content = @Content(schema = @Schema(implementation = Ticket.class)))
          }
@@ -127,7 +127,7 @@ public class TicketController {
 
         @Operation( summary = "Este endpoint permite listar los tickets por su ID" )
         @ApiResponses(value = { @ApiResponse(responseCode = "404",description = "NOT FOUND: Indica que el ticket no ha sido encontrado ",
-        content = @Content(schema = @Schema(implementation = Ticket.class))),
+        content = @Content(schema = @Schema(implementation = String.class))),
         @ApiResponse(responseCode = "200",description = "OK: Indica ticket que el ticket existe",
         content = @Content(schema = @Schema(implementation = Ticket.class)))
          }

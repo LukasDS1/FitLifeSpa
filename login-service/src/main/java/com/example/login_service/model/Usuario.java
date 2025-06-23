@@ -1,53 +1,39 @@
 package com.example.login_service.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "usuario")
+@Schema(description = "DTO para clase usuario")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único del usuario")
     private Long idUsuario;
 
-    @Column(nullable = false, length = 255, unique = true)
+    @Schema(description = "Email del usuario")
     private String email;
 
-    @Column(nullable = false, length =100)
+    @Schema(description = "Contraseña del usuario")
     private String password;
 
-    @Column(nullable = false, length = 50)
+    @Schema(description = "Nombre del usuario") 
     private String nombre;
 
-    @Column(nullable = false, length = 50)
+    @Schema(description = "Apellido paterno del usuario")
     private String apellidoPaterno;
 
-    @Column(nullable = false, length = 50)
+    @Schema(description = "Apellido materno del usuario")
     private String apellidoMaterno;
 
-    @Column(nullable = false, length = 10)
+    @Schema(description = "Genero del usuario")
     private String genero;
 
-    @Column(nullable = false, length = 12)
+    @Schema(description = "Rut del usuario")
     private String rut;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idRol")
-    @JsonIgnoreProperties("usuarios")
+    @Schema(description = "ID del rol asignado al usuario")
     private Rol rol;
 }
