@@ -9,14 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.clase_service.model.Clase;
 import com.example.clase_service.service.ClaseService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-
-
 
 @RestController
 @RequestMapping("/api-v1/clase")
@@ -26,6 +30,16 @@ public class ClaseController {
 
     private final ClaseService claseService;
 
+    @Operation(summary = "Lista todas las clases disponibles")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Clases listadas correctamente", 
+            content = @Content(schema = @Schema(implementation = Clase.class))),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Error al obtener las clases")
+    })
     @GetMapping("/listar")
     public ResponseEntity<List<Clase>> getAllClass() {
         try {
@@ -35,6 +49,16 @@ public class ClaseController {
         }
     }
 
+    @Operation(summary = "Crea una nueva clase")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Clase creada correctamente", 
+            content = @Content(schema = @Schema(type = "string", example = "clase creada correctamente."))),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Error al crear la clase")
+    })
     @PostMapping("/crear")
     public ResponseEntity<String> createClass(@RequestBody Clase clase) {
         try {
@@ -45,6 +69,20 @@ public class ClaseController {
         }
     }
 
+    
+    @Operation(summary = "Busca una clase por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Clase encontrada", 
+            content = @Content(schema = @Schema(implementation = Clase.class))),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Clase no encontrada"),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Error al buscar la clase por ID")
+    })
     @GetMapping("/listarid/{idClase}")
     public ResponseEntity<Clase> getClaseById(@PathVariable Long idClase) {
         try {
@@ -58,6 +96,19 @@ public class ClaseController {
         }
     }
 
+    @Operation(summary = "Elimina una clase por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Clase eliminada correctamente", 
+            content = @Content(schema = @Schema(type = "string", example = "Clase con ID: 1 Ha sido borrada con exito"))),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Clase no encontrada"),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Error al eliminar clase")
+    })
     @DeleteMapping("/borrar/{idClase}")
     public ResponseEntity<String> deleteClaseById(@PathVariable Long idClase) { 
         try {
@@ -72,6 +123,19 @@ public class ClaseController {
         }
     }
 
+    @Operation(summary = "Actualiza los datos de una clase existente")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Clase actualizada correctamente", 
+            content = @Content(schema = @Schema(type = "string", example = "Clase con ID: 1 actualizada con exito"))),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Parámetros inválidos"),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Clase no encontrada")
+    })
     @PutMapping("/update")
     public ResponseEntity<?> updateClass(@RequestBody Clase clase) {
         try {
@@ -88,13 +152,18 @@ public class ClaseController {
 
     }
 
+    @Operation(summary = "Obtiene el servicio relacionado a una clase por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Servicio relacionado obtenido correctamente"),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Clase no encontrada o sin servicio relacionado")
+    })
     @GetMapping("/servicio/{idClase}")
     public ResponseEntity<Map<String, Object>> getServicioDeClase(@PathVariable Long idClase) {
         Map<String, Object> servicio = claseService.obtenerServicioDeClase(idClase);
         return ResponseEntity.ok(servicio);
     }
-    
-    
-
-
 }
