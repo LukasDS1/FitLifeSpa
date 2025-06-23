@@ -1,6 +1,7 @@
 package com.example.privileges_service.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -135,5 +136,24 @@ class PrivilegesControllerTest {
             .andExpect(status().isOk());
     }
 
+    @Test
+    void ToggleActivo_ReturnsOK() throws Exception {
+        // Arrange
+        Long id = 1L;
+        Privileges priv = new Privileges();
+        priv.setIdPrivilege(id);
+        priv.setActivo(false); 
 
+        when(privilegesService.findPrivById(id)).thenReturn(priv);
+        when(privilegesService.addPrivileges(any(Privileges.class))).thenReturn(priv);
+
+        
+        mockMvc.perform(patch("/api/v1/privilegios/toggleActivo/{id}?estado=true", id)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.activo").value(true));
+
+        verify(privilegesService).findPrivById(id);
+        verify(privilegesService).addPrivileges(any(Privileges.class));
+    }
 }

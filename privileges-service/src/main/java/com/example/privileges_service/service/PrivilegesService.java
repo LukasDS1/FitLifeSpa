@@ -68,4 +68,6 @@ public class PrivilegesService {
     public Privileges findPrivById(Long id){
         return privRepository.findById(id).orElseThrow();
     }
+
+    
 }
