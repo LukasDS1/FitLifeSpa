@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http // Cross-Site Request Forgery
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth

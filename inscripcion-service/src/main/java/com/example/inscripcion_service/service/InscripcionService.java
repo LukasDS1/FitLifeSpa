@@ -40,35 +40,91 @@ public class InscripcionService {
         }
     }
 
+    public Inscripcion saveInscripcionValidada(Inscripcion insc) {
 
-    public Inscripcion agragarInscripcion(Inscripcion insc) {
-        String url_register_service = "http://localhost:8082/api-v1/register/exists/{id}";
+    if (insc.getIdClase() == null) {
+        throw new IllegalArgumentException("La clase no puede ser nula.");
+    }
+    if (!validarClase(insc.getIdClase())) {
+        throw new IllegalArgumentException("La clase especificada no existe.");
+    }
+
+    if (insc.getIdEstado() == null) {
+        throw new IllegalArgumentException("El estado no puede ser nulo.");
+    }
+    if (!validarEstado(insc.getIdEstado())) {
+        throw new IllegalArgumentException("El estado especificado no existe.");
+    }
+
+    if (insc.getIdUsuario() == null || insc.getIdUsuario().isEmpty()) {
+        throw new IllegalArgumentException("Debe haber al menos un usuario inscrito.");
+    }
+
+    String url_register_service = "http://localhost:8082/api-v1/register/exists/{id}";
+    for (Long idUsuario : insc.getIdUsuario()) {
         try {
-            
             @SuppressWarnings("rawtypes")
-            Map cliente = restTemplate.getForObject(url_register_service, Map.class, insc.getIdUsuario());
-
+            Map cliente = restTemplate.getForObject(url_register_service, Map.class, idUsuario);
             if (cliente == null || cliente.isEmpty()) {
-                throw new RuntimeException("El usuario no existe");
+                throw new IllegalArgumentException("El usuario con ID " + idUsuario + " no existe.");
             }
-            return inscripRepo.save(insc);
         } catch (HttpClientErrorException.NotFound e) {
-            throw new RuntimeException("El usuario no existe");
+            throw new IllegalArgumentException("El usuario con ID " + idUsuario + " no existe.");
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener el cliente: " + e.getMessage());
+            throw new RuntimeException("Error al validar el usuario con ID " + idUsuario + ": " + e.getMessage());
         }
     }
+
+ 
+    return inscripRepo.save(insc);
+}
+
 
     public List<Inscripcion> listarIncripcionesPorEstado(Long id){
         return inscripRepo.findByIdEstado(id);
     }
 
     public List<Inscripcion> listarIncripcionesPorClase(Long id){
-        return inscripRepo.FindByIdClase(id);
+        return inscripRepo.findByIdClase(id);
     }
 
     public List<Inscripcion> listarPorUsuario(Long id){
-        return inscripRepo.findByIdUsuario(id);
+        return inscripRepo.findByUsuarioId(id);
+    }
+
+     public Boolean validarEstado (Long idEstado){
+        String url = "http://localhost:8081/api/v1/privilegios/findEstado/{id}";
+        try {
+            @SuppressWarnings("rawtypes")
+            Map objeto = restTemplate.getForObject(url, Map.class, idEstado);
+
+            if (objeto == null || objeto.isEmpty()) {
+                return false;
+            }
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+      public Boolean validarClase (Long idClase){
+        String url = "http://localhost:8088/api-v1/clase/listarid/{idClase}";
+        try {
+            @SuppressWarnings("rawtypes")
+            Map claseObjeto = restTemplate.getForObject(url, Map.class, idClase);
+            
+            if (claseObjeto == null || claseObjeto.isEmpty()) {
+                return false;
+            }
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
     
 }

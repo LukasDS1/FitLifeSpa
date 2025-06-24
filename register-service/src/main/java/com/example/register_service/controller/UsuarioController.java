@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.register_service.model.Usuario;
 import com.example.register_service.service.UsuarioService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,11 +44,16 @@ public class UsuarioController {
     )
     @PostMapping("/crearUsuario")
     public ResponseEntity<?> CrearUsuario(@RequestBody Usuario usuario) {
-        if (usuarioService.getByMail(usuario.getEmail()) != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe");
+        try {
+            if (usuarioService.getByMail(usuario.getEmail()) != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe");
+            }
+            usuarioService.saveUsuario(usuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
+            
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        usuarioService.saveUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
     }
 
     //Comprobar la existencia de un usuario por email

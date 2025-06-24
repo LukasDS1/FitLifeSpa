@@ -229,7 +229,6 @@ public class PrivilegesController {
             moduloService.agregarModulo(modulo);
             return ResponseEntity.status(HttpStatus.CREATED).body(modulo);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }

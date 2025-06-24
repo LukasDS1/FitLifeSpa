@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http // Cross-Site Request Forgery
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
@@ -27,7 +27,7 @@ public class SecurityConfig {
 
     //TODO:BORRAR
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

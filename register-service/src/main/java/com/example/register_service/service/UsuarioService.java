@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.example.register_service.model.Rol;
 import com.example.register_service.model.Usuario;
+import com.example.register_service.repository.RolRepository;
 import com.example.register_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,6 +20,7 @@ public class UsuarioService {
     
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RolRepository rolRepository;
 
 
     public String encrypt(String password) {
@@ -43,10 +47,17 @@ public class UsuarioService {
       Usuario exist = usuarioRepository.findById(idUsuario).orElseThrow(()-> new EntityNotFoundException(" Usuario con ID: " + idUsuario + " no existe."));
       usuarioRepository.delete(exist);
     }
+
+    public Rol findRol(Long idRol){
+        return rolRepository.findById(idRol).orElseThrow(()-> new EntityNotFoundException("Rol no encontrado"));
+    }
     
 
     public Usuario saveUsuario(Usuario usuario){
         Usuario usuario1 = new Usuario();
+        if(findRol(usuario.getRol().getIdRol()) == null){
+            throw new EntityNotFoundException("Rol no encontrado");
+        }
         usuario1.setEmail(usuario.getEmail());
         usuario1.setNombre(usuario.getNombre());
         usuario1.setApellidoPaterno(usuario.getApellidoPaterno());

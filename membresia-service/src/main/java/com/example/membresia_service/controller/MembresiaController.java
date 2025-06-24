@@ -88,7 +88,7 @@ public class MembresiaController {
     @GetMapping("/plan/{idPlan}")
     public ResponseEntity<?> getMembresiasByPlan(@PathVariable Long idPlan) {
     Optional<Plan> planOptional = planRepository.findById(idPlan);
-    if (!planOptional.isPresent()) {
+    if (planOptional.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con ID " + idPlan + " no existe.");
     }
     List<Membresia> membresias = membresiaService.findMembresiasByPlanId(idPlan);

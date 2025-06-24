@@ -1,18 +1,19 @@
 package com.example.inscripcion_service.model;
 
 import java.util.Date;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,23 +32,25 @@ public class Inscripcion {
     private Long idInscripcion;
     
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @Schema(description = "La fecha en la que se hizo la inscripcion")
     private Date fechaInscripcion;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idClase")
-    @JsonIgnoreProperties("inscripcion")
-    @Schema(description = "Las clases en las que se inscribio")
-    private Clase clase;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idEstado")
-    @JsonIgnoreProperties("inscripcion")
-    @Schema(description = "El estado de la inscripcion")
-    private Estado estado;
+    
+    @Schema(description = "Coleccion de usuarios los cuales estan inscritos a una clase ")
+    @ElementCollection
+    @CollectionTable(name = "inscripcion_usuarios", joinColumns = @JoinColumn(name = "id_inscripcion"))
+    @Column(name = "id_usuario")
+    private List<Long> idUsuario;
 
     @Column(nullable = false)
-    @Schema(description = "el usuario al que pertenece la inscripcion")
-    private Long idUsuario;
+    @Schema(description = "Estado de la inscripcion")
+    private Long idEstado;
+    
+    @Column(nullable = false)
+    @Schema(description = "Clase relacionada con la inscripcion")
+    private Long idClase;
+
+    
 
 }

@@ -123,6 +123,7 @@ public class ReservaControllerTest {
     void deleteEstadoReserva_returnsOk_whenEstadoExists() throws Exception {
         EstadoReserva estado = new EstadoReserva();
         when(estadoReservaService.listarPorId(1L)).thenReturn(estado);
+        estado.setIdEstado(1L);
 
         mockMvc.perform(delete("/api-v1/reservas/estados/delete/1"))
             .andExpect(status().isOk())

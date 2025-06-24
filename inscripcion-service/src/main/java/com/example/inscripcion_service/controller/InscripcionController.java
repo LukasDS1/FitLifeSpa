@@ -11,12 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.inscripcion_service.model.Clase;
-import com.example.inscripcion_service.model.Estado;
 import com.example.inscripcion_service.model.Inscripcion;
-import com.example.inscripcion_service.service.ClaseService;
-import com.example.inscripcion_service.service.EstadoService;
+
 import com.example.inscripcion_service.service.InscripcionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,15 +23,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api-v1")
 @RequiredArgsConstructor
 public class InscripcionController {
     
     private final InscripcionService inscriService;
-    
-    private final EstadoService estadoService;
-  
-    private final ClaseService claseService;
+
 
     @Operation(summary = "Permite obtener una lista con todas las inscripciones")
     @ApiResponses(value ={
@@ -100,14 +93,15 @@ public class InscripcionController {
     } )
     @PostMapping("/inscripciones")
     public ResponseEntity<Inscripcion> addInscripcion(@RequestBody Inscripcion inst){
-        Estado estado = inst.getEstado();
-        Clase clase = inst.getClase();
-        if(estadoService.validarEstado(estado) && claseService.validarClase(clase)){
+        Long estado = inst.getIdEstado();
+        Long clase = inst.getIdClase();
+        if(inscriService.validarEstado(estado) && inscriService.validarClase(clase)){
             try {
                 Inscripcion inscripcion = inst;
-                inscriService.agragarInscripcion(inscripcion);
+                inscriService.saveInscripcionValidada(inscripcion);
                 return ResponseEntity.status(HttpStatus.CREATED).body(inscripcion);
             } catch (Exception e) {
+                e.printStackTrace();
                 return ResponseEntity.badRequest().build();
             }
         } else {
@@ -145,7 +139,7 @@ public class InscripcionController {
             inscriService.eliminarInscripcion(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            // TODO: handle exception
+          
             return ResponseEntity.badRequest().build();
         }
     }
@@ -161,12 +155,12 @@ public class InscripcionController {
             Inscripcion inscrip1 = new Inscripcion();
             inscrip1.setIdInscripcion(id);
             inscrip1.setFechaInscripcion(insc.getFechaInscripcion());
-            inscrip1.setClase(insc.getClase());
-            inscrip1.setEstado(insc.getEstado());
-            inscriService.agragarInscripcion(inscrip1);
+            inscrip1.setIdClase(insc.getIdClase());
+            inscrip1.setIdEstado(insc.getIdEstado());
+            inscrip1.setIdUsuario(insc.getIdUsuario());
+            inscriService.saveInscripcionValidada(inscrip1);
             return ResponseEntity.ok(inscrip1);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }

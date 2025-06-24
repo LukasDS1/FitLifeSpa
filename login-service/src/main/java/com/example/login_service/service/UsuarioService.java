@@ -6,7 +6,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.login_service.model.Usuario;
-import com.example.login_service.repository.UsuarioRepository;
+
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
     private final String url_register_service = "http://localhost:8082/api-v1/register";
@@ -54,10 +54,6 @@ public class UsuarioService {
         }
         
         return false;
-    }
-
-    public Boolean existsByEmail(String email) {
-        return usuarioRepository.findByEmail(email).isPresent();
     }
 
     public String encrypt(String rawPasswd) {

@@ -20,16 +20,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.login_service.model.Usuario;
-import com.example.login_service.repository.UsuarioRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
-
-    @Mock
-    private UsuarioRepository usuarioRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -72,11 +69,16 @@ public class UsuarioServiceTest {
 
     @Test
     void existsByEmail_returnsTrueIfUserExists() {
-        when(usuarioRepository.findByEmail("user@gmail.com"))
-            .thenReturn(Optional.of(new Usuario()));
+        String email = "email@ejemplo.com";
+        Usuario usuario = new Usuario();
+        usuario.setEmail(email);
 
-        boolean result = usuarioService.existsByEmail("user@gmail.com");
-        assertTrue(result);
+        when(restTemplate.postForObject(anyString(), any(Usuario.class), eq(Usuario.class))).thenReturn(usuario);
+
+        Usuario result = usuarioService.userExists(email);
+
+        assertEquals(result, usuario);
+       
     }
 
     @Test

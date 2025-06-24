@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "privilegio")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Data   
 @Schema(description = "Los privilegios de FitLifeSPA")
 public class Privileges {
     @Id

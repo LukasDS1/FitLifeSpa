@@ -144,7 +144,7 @@ public class ReservaController {
     @DeleteMapping("/estados/delete/{id}")
     public ResponseEntity<?> deleteEstadoReserva (@PathVariable Long id){
         EstadoReserva estado = estadoReservaService.listarPorId(id);
-        if (estado != null) {
+        if (estado == null) {
             return ResponseEntity.notFound().build();
         }
         estadoReservaService.eliminarEstadoReserva(id);

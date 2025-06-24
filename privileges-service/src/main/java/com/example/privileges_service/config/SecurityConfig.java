@@ -10,7 +10,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http // Cross-Site Request Forgery
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth

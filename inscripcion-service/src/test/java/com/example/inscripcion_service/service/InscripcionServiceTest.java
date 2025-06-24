@@ -1,11 +1,12 @@
 package com.example.inscripcion_service.service;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
@@ -74,23 +76,40 @@ public class InscripcionServiceTest {
         verify(inscripRepo).deleteById(10L);
     }
 
-    @Test
-    void agragarInscripcion_returnsSavedInscripcion_whenUserExists() {
-        Inscripcion insc = new Inscripcion();
-        insc.setIdUsuario(99L);
+   @Test
+void saveInscripcionValidada_OK() {
+    Inscripcion insc = new Inscripcion();
+    insc.setIdClase(1L);
+    insc.setIdEstado(1L);
+    insc.setIdUsuario(List.of(100L, 101L));
 
-        Map<String, Object> usuarioMock = Map.of("id", 99);
-        when(restTemplate.getForObject(anyString(), eq(Map.class), eq(99L)))
-            .thenReturn(usuarioMock);
+    Mockito.when(restTemplate.getForObject(
+        eq("http://localhost:8088/api-v1/clase/listarid/{idClase}"),
+        eq(Map.class),eq(1L))).thenReturn(Map.of("idClase", 1L)); 
 
-        when(inscripRepo.save(insc)).thenReturn(insc);
+ 
+    Mockito.when(restTemplate.getForObject(
+        eq("http://localhost:8081/api/v1/privilegios/findEstado/{id}"),
+        eq(Map.class),eq(1L))).thenReturn(Map.of("idEstado", 1L)); 
 
-        Inscripcion result = inscripcionService.agragarInscripcion(insc);
+    
+    Mockito.when(restTemplate.getForObject(
+        eq("http://localhost:8082/api-v1/register/exists/{id}"),
+        eq(Map.class),eq(100L))).thenReturn(Map.of("exists", true));
 
-        assertThat(result).isEqualTo(insc);
-        verify(inscripRepo).save(insc);
-    }
+    Mockito.when(restTemplate.getForObject(
+        eq("http://localhost:8082/api-v1/register/exists/{id}"),
+        eq(Map.class),eq(101L))).thenReturn(Map.of("exists", true));
 
+
+    Mockito.when(inscripRepo.save(insc)).thenReturn(insc);
+
+
+    Inscripcion result = inscripcionService.saveInscripcionValidada(insc);
+
+    assertNotNull(result);
+    assertEquals(insc, result);
+}
     @Test
     void listarIncripcionesPorEstado_returnsList() {
         List<Inscripcion> lista = List.of(new Inscripcion());
@@ -104,7 +123,7 @@ public class InscripcionServiceTest {
     @Test
     void listarIncripcionesPorClase_returnsList() {
         List<Inscripcion> lista = List.of(new Inscripcion());
-        when(inscripRepo.FindByIdClase(3L)).thenReturn(lista);
+        when(inscripRepo.findByIdClase(3L)).thenReturn(lista);
 
         List<Inscripcion> result = inscripcionService.listarIncripcionesPorClase(3L);
 
@@ -114,7 +133,7 @@ public class InscripcionServiceTest {
     @Test
     void listarPorUsuario_returnsList() {
         List<Inscripcion> lista = List.of(new Inscripcion());
-        when(inscripRepo.findByIdUsuario(4L)).thenReturn(lista);
+        when(inscripRepo.findByUsuarioId(4L)).thenReturn(lista);
 
         List<Inscripcion> result = inscripcionService.listarPorUsuario(4L);
 

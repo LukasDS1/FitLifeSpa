@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.register_service.model.Rol;
 import com.example.register_service.model.Usuario;
+import com.example.register_service.repository.RolRepository;
 import com.example.register_service.repository.UsuarioRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +26,9 @@ public class UsuarioServiceTest {
 
     @Mock
     private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private RolRepository rolRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -87,7 +92,11 @@ public class UsuarioServiceTest {
     //aqui verificamos que al guarde el usuario de manera correcta
     @Test
     void saveUser_saveusers(){
-    Usuario usuario = new Usuario(1L, "test@gmail.com", "test1", "test1", "test1", "test1", "test1", "test1", null);
+    Rol rol = new Rol(1L, "oal", null);
+    
+    when(rolRepository.findById(rol.getIdRol())).thenReturn(Optional.of(rol));
+
+    Usuario usuario = new Usuario(1L, "test@gmail.com", "test1", "test1", "test1", "test1", "test1", "test1", rol);
 
     when(passwordEncoder.encode("test1")).thenReturn("encrypt");
 

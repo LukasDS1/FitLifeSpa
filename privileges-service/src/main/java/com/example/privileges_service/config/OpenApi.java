@@ -9,8 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 public class OpenApi {
     @Bean
-
-  public OpenAPI apiInfo(){
+    OpenAPI apiInfo(){
 
     return new OpenAPI()
 
