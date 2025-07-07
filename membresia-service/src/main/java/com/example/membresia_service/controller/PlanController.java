@@ -5,8 +5,9 @@ import java.util.Optional;
 
 import javax.print.DocFlavor.STRING;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.membresia_service.model.Membresia;
 import com.example.membresia_service.model.Plan;
 import com.example.membresia_service.service.PlanService;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,15 +46,21 @@ public class PlanController {
     }
     )
     @PostMapping("/crear")
-    public ResponseEntity<Plan> savePlan(@RequestBody Plan plan) {
-        try {
-            planService.CreatePlan(plan);
-            return ResponseEntity.status(HttpStatus.CREATED).body(plan);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<?> savePlan(@RequestBody Plan plan) {
+    try {
+        Plan creado = planService.CreatePlan(plan);
+
+        EntityModel<Plan> model = EntityModel.of(creado);
+        model.add(linkTo(methodOn(PlanController.class).getById(creado.getIdPlan())).withSelfRel());
+        model.add(linkTo(methodOn(PlanController.class).getAllPlanes()).withRel("listar_todos"));
+        model.add(linkTo(methodOn(PlanController.class).getMembresiasPorPlan(creado.getIdPlan())).withRel("ver_membresias"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(model);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.badRequest().body("Error al crear el plan");
     }
+}
 
     
     //Este endpoint permite listar todos los planes
@@ -65,13 +72,26 @@ public class PlanController {
     }
     )
     @GetMapping("/listall")
-    public ResponseEntity<List<Plan>> getAllPlanes() {
-        try {
-            return ResponseEntity.ok(planService.getAllPlan());
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+    public ResponseEntity<?> getAllPlanes() {
+    List<Plan> planes = planService.getAllPlan();
+    if (planes.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay planes registrados");
     }
+
+    List<EntityModel<Plan>> planesModel = planes.stream().map(plan -> {
+        EntityModel<Plan> model = EntityModel.of(plan);
+        model.add(linkTo(methodOn(PlanController.class).getById(plan.getIdPlan())).withSelfRel());
+        model.add(linkTo(methodOn(PlanController.class).getMembresiasPorPlan(plan.getIdPlan())).withRel("ver_membresias"));
+        return model;
+    }).toList();
+
+    CollectionModel<EntityModel<Plan>> collection = CollectionModel.of(
+        planesModel,
+        linkTo(methodOn(PlanController.class).getAllPlanes()).withSelfRel()
+    );
+
+    return ResponseEntity.ok(collection);
+}
 
 
     //Este endpoint permite listar los planes por ID
@@ -84,16 +104,21 @@ public class PlanController {
     )
     @GetMapping("/listid/{idPlan}")
     public ResponseEntity<?> getById(@PathVariable Long idPlan) {
-        try {
-            Optional<Plan> exist = planService.getbyID(idPlan);
-            if (exist.isPresent()) {
-                return ResponseEntity.ok(exist.get());
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Plan con ID:"+idPlan+" no encontrada!");
-        } catch (Exception e) {
-            throw new RuntimeException("Membresia con ID: " +idPlan+ "no encontrada");
+    try {
+        Optional<Plan> exist = planService.getbyID(idPlan);
+        if (exist.isPresent()) {
+            Plan plan = exist.get();
+            EntityModel<Plan> model = EntityModel.of(plan);
+            model.add(linkTo(methodOn(PlanController.class).getById(idPlan)).withSelfRel());
+            model.add(linkTo(methodOn(PlanController.class).getAllPlanes()).withRel("listar_todos"));
+            model.add(linkTo(methodOn(PlanController.class).getMembresiasPorPlan(idPlan)).withRel("ver_membresias"));
+            return ResponseEntity.ok(model);
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Plan con ID: " + idPlan + " no encontrado");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el plan");
     }
+}
 
     //Este endpoint permite listar los planes asociados a una membresia 
     @Operation( summary = "Este endpoint permite listar los planes asociados a una membresia" )
@@ -107,16 +132,22 @@ public class PlanController {
     )
     @GetMapping("/listMembresiaplan/{idPlan}")
     public ResponseEntity<?> getMembresiasPorPlan(@PathVariable Long idPlan) {
-        Optional<Plan> exist = planService.getbyID(idPlan);
-        if(exist.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con la ID: "+idPlan+ " no existe");
-        }
-        List<Membresia> membresias = planService.getMembresiasByPlanId(idPlan);
-        if(membresias.isEmpty()){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("El plan con la ID: "+idPlan+" no posee membresias asociadas");
-        }
-        return ResponseEntity.ok(membresias);
+    Optional<Plan> exist = planService.getbyID(idPlan);
+    if (exist.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con ID: " + idPlan + " no existe");
     }
+
+    List<Membresia> membresias = planService.getMembresiasByPlanId(idPlan);
+    if (membresias.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("El plan con ID: " + idPlan + " no tiene membresías asociadas");
+    }
+
+    CollectionModel<Membresia> model = CollectionModel.of(membresias);
+    model.add(linkTo(methodOn(PlanController.class).getById(idPlan)).withRel("detalle_plan"));
+    model.add(linkTo(methodOn(PlanController.class).getAllPlanes()).withRel("todos_los_planes"));
+
+    return ResponseEntity.ok(model);
+}
 
     //Este endpoint permite eliminar planes por su ID
     @Operation( summary = "Este endpoint permite eliminar planes por su ID" )
@@ -127,14 +158,16 @@ public class PlanController {
     }
     )
     @DeleteMapping("/deleteplan/{idPlan}")
-    public ResponseEntity<String> deletePlan (@PathVariable Long idPlan) {
-        try {
-            planService.delete(idPlan);
-            return ResponseEntity.status(HttpStatus.OK).body("Plan borrado con exito");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<?> deletePlan(@PathVariable Long idPlan) {
+    try {
+        planService.delete(idPlan);
+        EntityModel<String> model = EntityModel.of("Plan eliminado correctamente");
+        model.add(linkTo(methodOn(PlanController.class).getAllPlanes()).withRel("listar_todos"));
+        return ResponseEntity.ok(model);
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
     }
+}
 
     //Este endpoint permite actualizar los planes por su ID
     @Operation( summary = "Este endpoint permite actualizar los planes por su ID" )
@@ -145,15 +178,19 @@ public class PlanController {
     }
     )
     @PatchMapping("/updateplan/{idPlan}")
-    public ResponseEntity<?> updatePlan(@PathVariable Long idPlan,@RequestBody Plan plan) {
-        try {
-            plan.setIdPlan(idPlan);
-            Plan plan2 = planService.updatePlan(plan);
-            return ResponseEntity.ok().body(plan2);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con ID: "+idPlan+"no ha sido encontrado");
-        }
+    public ResponseEntity<?> updatePlan(@PathVariable Long idPlan, @RequestBody Plan plan) {
+    try {
+        plan.setIdPlan(idPlan);
+        Plan actualizado = planService.updatePlan(plan);
+
+        EntityModel<Plan> model = EntityModel.of(actualizado);
+        model.add(linkTo(methodOn(PlanController.class).getById(idPlan)).withSelfRel());
+        model.add(linkTo(methodOn(PlanController.class).getMembresiasPorPlan(idPlan)).withRel("ver_membresias"));
+        return ResponseEntity.ok(model);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con ID: " + idPlan + " no fue encontrado");
     }
+}
     
 
 }

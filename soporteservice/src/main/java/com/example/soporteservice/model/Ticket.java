@@ -3,6 +3,8 @@ package com.example.soporteservice.model;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -21,15 +23,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 @Schema(description = "Este es el modelo para Ticket")
 @Entity
 @Table(name="ticket")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
-public class Ticket {
+public class Ticket extends RepresentationModel<Ticket>{
     @Schema(description = "ID unico para Ticket")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

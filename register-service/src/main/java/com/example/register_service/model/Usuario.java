@@ -1,5 +1,7 @@
 package com.example.register_service.model;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -13,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "Clase usuario la cual sera utilizada para modelar un usuario con todos sus atributos")
@@ -21,8 +24,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
-public class Usuario {
+@EqualsAndHashCode(callSuper = false)
+public class Usuario extends RepresentationModel<Usuario>{
     @Schema(description = "ID unico del usuario")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

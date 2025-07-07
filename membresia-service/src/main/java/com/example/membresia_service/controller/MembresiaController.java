@@ -14,7 +14,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,18 +50,29 @@ public class MembresiaController {
     }
     )
     @PostMapping("/crearmembresia")
-    public ResponseEntity<String> saveMembresia(@RequestBody Membresia membresia) {
-        try {
-            membresiaService.saveMembresia(membresia);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Membresia creada con exito!");
-        } catch (IllegalArgumentException  e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error "+e.getMessage());
-        } catch (Exception e) {
+    public ResponseEntity<?> saveMembresia(@RequestBody Membresia membresia) {
+    try {
+        Membresia saved = membresiaService.saveMembresia(membresia);
+
+        EntityModel<Membresia> resource = EntityModel.of(saved,
+            linkTo(methodOn(MembresiaController.class).getById(saved.getIdMembresia())).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("all-membresias"),
+            linkTo(methodOn(MembresiaController.class).updateMembresia(saved.getIdMembresia(), saved)).withRel("update"),
+            linkTo(methodOn(MembresiaController.class).deleteMembresias(saved.getIdMembresia())).withRel("delete")
+        );
+
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error inesperado: " + e.getMessage());
+            .created(linkTo(methodOn(MembresiaController.class).getById(saved.getIdMembresia())).toUri())
+            .body(resource);
+
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error inesperado: " + e.getMessage());
     }
-    }
+}
 
      //listar todas las membresias
     @Operation( summary = "Este endpoint permite listar todas membresia" )
@@ -67,14 +83,23 @@ public class MembresiaController {
     }
     )
     @GetMapping("/listallmembresia")
-    public ResponseEntity<List<Membresia>> getAllMembresias() {
-        try {
-            return ResponseEntity.ok(membresiaService.getByAll());
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+    public ResponseEntity<?> getAllMembresias() {
+    List<Membresia> membresias = membresiaService.getByAll();
+
+    if (membresias.isEmpty()) {
+        return ResponseEntity.noContent().build();
     }
 
+    List<EntityModel<Membresia>> membresiaResources = membresias.stream()
+        .map(m -> EntityModel.of(m,
+            linkTo(methodOn(MembresiaController.class).getById(m.getIdMembresia())).withSelfRel()))
+        .toList();
+
+    CollectionModel<EntityModel<Membresia>> collectionModel = CollectionModel.of(membresiaResources,
+    linkTo(methodOn(MembresiaController.class).getAllMembresias()).withSelfRel());
+
+    return ResponseEntity.ok(collectionModel);
+}
     //listar todas las membresias por id con el plan al cual estan asociadas
     @Operation(summary = "Este endpoint permite listar todas las membresías asociadas a un plan")
     @ApiResponses(value = {
@@ -91,12 +116,26 @@ public class MembresiaController {
     if (planOptional.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El plan con ID " + idPlan + " no existe.");
     }
+
     List<Membresia> membresias = membresiaService.findMembresiasByPlanId(idPlan);
-    if(membresias.isEmpty()){
+    if (membresias.isEmpty()) {
         return ResponseEntity.accepted().body("El plan existe pero no tiene membresias asignadas");
     }
-    return ResponseEntity.ok(membresias);
-    }
+    List<EntityModel<Membresia>> membresiaResources = membresias.stream()
+        .map(m -> EntityModel.of(m,
+                linkTo(methodOn(MembresiaController.class).getById(m.getIdMembresia())).withSelfRel(),
+                linkTo(methodOn(MembresiaController.class).getMembresiasByPlan(idPlan)).withRel("membresias-by-plan")
+        ))
+        .toList();
+
+    CollectionModel<EntityModel<Membresia>> collectionModel = CollectionModel.of(
+        membresiaResources,
+        linkTo(methodOn(MembresiaController.class).getMembresiasByPlan(idPlan)).withSelfRel(),
+        linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("all-membresias")
+    );
+
+    return ResponseEntity.ok(collectionModel);
+}
 
 
     //listar todas los usuarios por id asociados con membresias
@@ -121,10 +160,23 @@ public class MembresiaController {
         return ResponseEntity.ok("El usuario existe pero no tiene membresías asignadas.");
     }
 
-    return ResponseEntity.ok(membresias);
+    List<EntityModel<Membresia>> membresiaResources = membresias.stream()
+        .map(m -> EntityModel.of(m,
+            linkTo(methodOn(MembresiaController.class).getById(m.getIdMembresia())).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getMembresiasPorUsuario(idUsuario)).withRel("membresias-por-usuario")
+        ))
+        .toList();
+
+    CollectionModel<EntityModel<Membresia>> collectionModel = CollectionModel.of(
+        membresiaResources,
+        linkTo(methodOn(MembresiaController.class).getMembresiasPorUsuario(idUsuario)).withSelfRel(),
+        linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("all-membresias")
+    );
+
+    return ResponseEntity.ok(collectionModel);
 }
 
-    //listar las membresias por id
+    
     @Operation( summary = "Este endpoint permite listar  las membresias por su ID" )
     @ApiResponses(value = { @ApiResponse(responseCode = "200",description = "OK: Indica que la membresia ha sido encontrada",
     content = @Content(schema = @Schema(implementation = Membresia.class))),
@@ -134,16 +186,23 @@ public class MembresiaController {
     )
     @GetMapping("/listid/{idMembresia}")
     public ResponseEntity<?> getById(@PathVariable Long idMembresia) {
-        try {
-            Optional<Membresia> exist = membresiaService.findByid(idMembresia);
-            if (exist.isPresent()) {
-                return ResponseEntity.ok(exist.get());
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Membresia con ID: " + idMembresia + "no encontrada");
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    Optional<Membresia> exist = membresiaService.findByid(idMembresia);
+    if (exist.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body("Membresia con ID: " + idMembresia + " no encontrada");
     }
+
+    Membresia membresia = exist.get();
+
+    EntityModel<Membresia> resource = EntityModel.of(membresia,
+        linkTo(methodOn(MembresiaController.class).getById(idMembresia)).withSelfRel(),
+        linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("all-membresias"),
+        linkTo(methodOn(MembresiaController.class).deleteMembresias(idMembresia)).withRel("delete"),
+        linkTo(methodOn(MembresiaController.class).updateMembresia(idMembresia, membresia)).withRel("update")
+    );
+
+    return ResponseEntity.ok(resource);
+}
 
     //borrar las membresias por id
     @Operation( summary = "Este endpoint permite borrar las membresias por su ID" )
@@ -155,20 +214,45 @@ public class MembresiaController {
     content = @Content(schema = @Schema(implementation = String.class)))
     }
     )
-  @DeleteMapping("/deletemembresia/{idMembresia}")  
-  public ResponseEntity<String> deleteMembresias(@PathVariable Long idMembresia) {
+  @DeleteMapping("/deletemembresia/{idMembresia}")
+public ResponseEntity<EntityModel<Map<String, Object>>> deleteMembresias(@PathVariable Long idMembresia) {
     try {
         boolean deleted = membresiaService.deleteMembresia(idMembresia);
+        Map<String, Object> body;
+
         if (deleted) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Membresía borrada con exito");
+            body = Map.of("mensaje", "Membresía borrada con éxito");
+
+            EntityModel<Map<String, Object>> resource = EntityModel.of(
+                body,
+                linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias"),
+                linkTo(methodOn(MembresiaController.class).saveMembresia(null)).withRel("crear-membresia")
+            );
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(resource);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Membresía con ID: " + idMembresia + " no encontrada");
+            body = Map.of("mensaje", "Membresía con ID: " + idMembresia + " no encontrada");
+
+            EntityModel<Map<String, Object>> resource = EntityModel.of(
+                body,
+                linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias")
+            );
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resource);
         }
     } catch (Exception e) {
-        e.printStackTrace(); 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error técnico: " + e.getMessage());
+        e.printStackTrace();
+
+        Map<String, Object> body = Map.of("mensaje", "Ocurrió un error técnico: " + e.getMessage());
+
+        EntityModel<Map<String, Object>> resource = EntityModel.of(
+            body,
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias")
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resource);
     }
-}   
+}
 
      //actualizar las membresias por id
     @Operation( summary = "Este endpoint permite actualizar las membresias por su ID" )
@@ -180,14 +264,21 @@ public class MembresiaController {
     )
     @PatchMapping("/update/{idMembresia}")
     public ResponseEntity<?> updateMembresia(@PathVariable Long idMembresia, @RequestBody Membresia membresia){
-        try {
-            membresia.setIdMembresia(idMembresia);
-            Membresia updateMembresia = membresiaService.UpdateUserById(membresia);
-            return ResponseEntity.ok(updateMembresia);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    try {
+        membresia.setIdMembresia(idMembresia);
+        Membresia updatedMembresia = membresiaService.UpdateUserById(membresia);
+
+        EntityModel<Membresia> resource = EntityModel.of(updatedMembresia,
+            linkTo(methodOn(MembresiaController.class).getById(idMembresia)).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias"),
+            linkTo(methodOn(MembresiaController.class).deleteMembresias(idMembresia)).withRel("borrar-membresia")
+        );
+
+        return ResponseEntity.ok(resource);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+}
 
      //setea el plan a una membresia
     @Operation( summary = "Este endpoint permite setear un plan a las membresias" )
@@ -199,19 +290,25 @@ public class MembresiaController {
     content = @Content(schema = @Schema(implementation = String.class)))
     }
     )
-    @PutMapping("/assignplan")
-    public ResponseEntity<String> assignPlan(@RequestBody Membresia membresia) {
-        try {
-            if (membresia.getPlan() == null || membresia.getPlan().getIdPlan() == null) {
+   @PutMapping("/assignplan")
+public ResponseEntity<?> assignPlan(@RequestBody Membresia membresia) {
+    try {
+        if (membresia.getPlan() == null || membresia.getPlan().getIdPlan() == null) {
             return ResponseEntity.badRequest().body("Falta el ID del plan.");
         }   
-            membresiaService.assignPlanToMembership(membresia.getIdMembresia(), membresia.getPlan().getIdPlan());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Plan con ID: "+membresia.getPlan().getIdPlan()+" agregada con exito a la membresia de ID: "+membresia.getIdMembresia());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            
-        }
+        membresiaService.assignPlanToMembership(membresia.getIdMembresia(), membresia.getPlan().getIdPlan());
+        Membresia updatedMembresia = membresiaService.findByid(membresia.getIdMembresia())
+            .orElseThrow(() -> new RuntimeException("Membresía no encontrada después de asignar el plan"));
+        EntityModel<Membresia> resource = EntityModel.of(updatedMembresia,
+            linkTo(methodOn(MembresiaController.class).getById(updatedMembresia.getIdMembresia())).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getMembresiasByPlan(membresia.getPlan().getIdPlan())).withRel("membresias-por-plan"),
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias")
+        );
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(resource);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
+}
 
     //assigna un usuario a una membresia
     @Operation( summary = "Este endpoint permite actualizar las membresias por su ID" )
@@ -222,15 +319,24 @@ public class MembresiaController {
     }
     )
     @PutMapping("/assignuser/{idUsuario}")
-    public ResponseEntity<String> assignUser(@RequestBody Membresia membresia, @PathVariable Long idUsuario) {
+    public ResponseEntity<?> assignUser(@RequestBody Membresia membresia, @PathVariable Long idUsuario) {
     try {
         membresiaService.assignUsuarioToMembership(membresia.getIdMembresia(), idUsuario);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body("Usuario con ID: " + idUsuario + " agregado con éxito a la membresía ID: " + membresia.getIdMembresia());
+
+        Membresia updatedMembresia = membresiaService.findByid(membresia.getIdMembresia())
+            .orElseThrow(() -> new RuntimeException("Membresía no encontrada después de asignar usuario"));
+
+        EntityModel<Membresia> resource = EntityModel.of(updatedMembresia,
+            linkTo(methodOn(MembresiaController.class).getById(updatedMembresia.getIdMembresia())).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getMembresiasPorUsuario(idUsuario)).withRel("membresias-por-usuario"),
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias")
+        );
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(resource);
     } catch (Exception e) {
         return ResponseEntity.badRequest().body("Error: " + e.getMessage());
     }
-    }
+}
 
 
     //elimina un usuario de una membresia
@@ -241,15 +347,25 @@ public class MembresiaController {
     content = @Content(schema = @Schema(implementation = Membresia.class)))
     }
     )
-    @DeleteMapping("/deleteuser/{idUser}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long idUser,@RequestBody Membresia membresia){
-        try {
-            membresiaService.deleteUsersFromMembresia(membresia.getIdMembresia(), idUser);
-            return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado correctamente de la membresia");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(e.getMessage());
-        }
+   @DeleteMapping("/deleteuser/{idUser}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long idUser, @RequestBody Membresia membresia) {
+    try {
+        membresiaService.deleteUsersFromMembresia(membresia.getIdMembresia(), idUser);
+
+        Membresia updatedMembresia = membresiaService.findByid(membresia.getIdMembresia())
+            .orElseThrow(() -> new RuntimeException("Membresía no encontrada después de eliminar usuario"));
+
+        EntityModel<Membresia> resource = EntityModel.of(updatedMembresia,
+            linkTo(methodOn(MembresiaController.class).getById(updatedMembresia.getIdMembresia())).withSelfRel(),
+            linkTo(methodOn(MembresiaController.class).getMembresiasPorUsuario(idUser)).withRel("membresias-por-usuario"),
+            linkTo(methodOn(MembresiaController.class).getAllMembresias()).withRel("todas-las-membresias")
+        );
+
+        return ResponseEntity.ok(resource);
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(e.getMessage());
     }
+}
 
 
 }

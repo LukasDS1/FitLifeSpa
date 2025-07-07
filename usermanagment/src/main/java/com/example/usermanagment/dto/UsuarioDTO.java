@@ -1,17 +1,20 @@
 package com.example.usermanagment.dto;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 @Schema(description = " DTO de la clase usuario la cual se encarga de almacenar los datos de la clase usuario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class UsuarioDTO {
+@EqualsAndHashCode(callSuper = false)
+public class UsuarioDTO extends RepresentationModel<UsuarioDTO>{
     @Schema(description = "ID unico del usuario")
     private Long idUsuario;
 

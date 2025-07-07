@@ -3,7 +3,15 @@ package com.example.usermanagment.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -24,16 +32,32 @@ public class UsuarioService {
     private final String URL = "http://localhost:8082/api-v1/register";
 
     //Listar todos los usuarios
-    public List<UsuarioDTO> listAllUsers(){
-        try {
-            UsuarioDTO[] usuarios = restTemplate.getForObject(URL + "/getall", UsuarioDTO[].class);
-            return Arrays.asList(usuarios);
-            
-        } catch (HttpClientErrorException.NotFound e) {
-            e.getResponseBodyAsString();
-            return new ArrayList<>();
-        }
+    public List<UsuarioDTO> listAllUsers() {
+    try {
+        ParameterizedTypeReference<CollectionModel<EntityModel<UsuarioDTO>>> responseType =
+                new ParameterizedTypeReference<>() {};
+
+        ResponseEntity<CollectionModel<EntityModel<UsuarioDTO>>> response = restTemplate.exchange(
+                URL + "/getall",
+                HttpMethod.GET,
+                null,
+                responseType);
+
+        CollectionModel<EntityModel<UsuarioDTO>> collectionModel = response.getBody();
+
+
+        List<UsuarioDTO> usuarios = collectionModel.getContent()
+                .stream()
+                .map(EntityModel::getContent)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        return usuarios;
+
+    } catch (HttpClientErrorException.NotFound e) {
+        return new ArrayList<>();
     }
+}
 
     //Buscar por ID
     public UsuarioDTO findByID(Long idUsuario){

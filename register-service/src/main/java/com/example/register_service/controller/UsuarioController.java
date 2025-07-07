@@ -1,9 +1,14 @@
 package com.example.register_service.controller;
 
 
+
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.register_service.model.Usuario;
@@ -23,7 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
 @RestController
@@ -44,17 +49,26 @@ public class UsuarioController {
     )
     @PostMapping("/crearUsuario")
     public ResponseEntity<?> CrearUsuario(@RequestBody Usuario usuario) {
-        try {
-            if (usuarioService.getByMail(usuario.getEmail()) != null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe");
-            }
-            usuarioService.saveUsuario(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente.");
-            
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    try {
+        if (usuarioService.getByMail(usuario.getEmail()) != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe");
         }
+        usuarioService.saveUsuario(usuario);
+        Usuario nuevoUsuario = usuarioService.getByMail(usuario.getEmail());
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("mensaje", "Usuario creado correctamente.");
+
+        EntityModel<Map<String, Object>> resource = EntityModel.of(body);
+        resource.add(linkTo(methodOn(UsuarioController.class).existsById(nuevoUsuario.getIdUsuario())).withRel("ver-usuario"));
+        resource.add(linkTo(methodOn(UsuarioController.class).getAllUsers()).withRel("todos"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+}
 
     //Comprobar la existencia de un usuario por email
     @Operation( summary = "Este endpoint permite comprobar la existencia de un usuario por email" )
@@ -69,7 +83,11 @@ public class UsuarioController {
         try {
             Usuario usuario1 = usuarioService.getByMail(usuario.getEmail());
             if (usuario1 != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(usuario1);
+            EntityModel<Usuario> usuarioModel = EntityModel.of(usuario1);
+            usuarioModel.add(linkTo(methodOn(UsuarioController.class).getUserByMail(usuario)).withSelfRel());
+            usuarioModel.add(linkTo(methodOn(UsuarioController.class).existsById(usuario1.getIdUsuario())).withRel("ver-por-id"));
+            usuarioModel.add(linkTo(methodOn(UsuarioController.class).deleteById(usuario1.getIdUsuario())).withRel("eliminar"));
+                return ResponseEntity.status(HttpStatus.OK).body(usuarioModel);
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -89,7 +107,14 @@ public class UsuarioController {
     public ResponseEntity<?> existsById(@PathVariable Long id) {
     try {
         Usuario usuario1 = usuarioService.findByID(id);
-        return ResponseEntity.ok(usuario1);
+        EntityModel<Usuario> usuarioModel = EntityModel.of(usuario1);
+        
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).existsById(id)).withSelfRel());
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).getAllUsers()).withRel("todos"));
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).deleteById(id)).withRel("eliminar"));
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).updateUsuario(id, usuario1)).withRel("actualizar"));
+
+        return ResponseEntity.ok(usuarioModel);
     } catch (RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario con ID: " + id + " no encontrado!");
     }
@@ -108,7 +133,9 @@ public class UsuarioController {
     public ResponseEntity<?> deleteById(@PathVariable Long idUsuario) {
     try {
         usuarioService.deleteByid(idUsuario);
-        return ResponseEntity.ok("El usuario ha sido borrado con exito!");
+        EntityModel<String> response = EntityModel.of("El usuario ha sido borrado con éxito!");
+        response.add(linkTo(methodOn(UsuarioController.class).getAllUsers()).withRel("todos"));
+        return ResponseEntity.ok(response);
     } catch (EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
@@ -129,7 +156,13 @@ public class UsuarioController {
     try {
         usuario.setIdUsuario(idUsuario);
         Usuario updatedUsuario = usuarioService.UpdateUserById(usuario);
-        return ResponseEntity.ok(updatedUsuario);
+        
+        EntityModel<Usuario> usuarioModel = EntityModel.of(updatedUsuario);
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).updateUsuario(idUsuario, usuario)).withSelfRel());
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).existsById(idUsuario)).withRel("ver-usuario"));
+        usuarioModel.add(linkTo(methodOn(UsuarioController.class).getAllUsers()).withRel("todos"));
+        return ResponseEntity.ok(usuarioModel);
+
     } catch (EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch(DataIntegrityViolationException e){
@@ -150,7 +183,21 @@ public class UsuarioController {
     public ResponseEntity<?> getAllUsers() {
     try {
         List<Usuario> usuarios = usuarioService.findAll();
-        return ResponseEntity.ok(usuarios);
+
+         List<EntityModel<Usuario>> usuariosModel = usuarios.stream().map(usuario -> {
+            EntityModel<Usuario> model = EntityModel.of(usuario);
+            model.add(linkTo(methodOn(UsuarioController.class).existsById(usuario.getIdUsuario())).withSelfRel());
+            model.add(linkTo(methodOn(UsuarioController.class).deleteById(usuario.getIdUsuario())).withRel("eliminar"));
+            model.add(linkTo(methodOn(UsuarioController.class).updateUsuario(usuario.getIdUsuario(), usuario)).withRel("actualizar"));
+            return model;
+        }).toList();
+
+        CollectionModel<EntityModel<Usuario>> collectionModel = CollectionModel.of(
+            usuariosModel,
+            linkTo(methodOn(UsuarioController.class).getAllUsers()).withSelfRel()
+        );
+
+        return ResponseEntity.ok(collectionModel);
     } catch (EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No existen usuario registrados");
     }

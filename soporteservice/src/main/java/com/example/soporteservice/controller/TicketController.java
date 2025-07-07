@@ -1,7 +1,9 @@
 package com.example.soporteservice.controller;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,12 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
-
-
 import com.example.soporteservice.model.Ticket;
 import com.example.soporteservice.service.TicketService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api-v1/ticket")
@@ -42,8 +41,8 @@ public class TicketController {
     content = @Content(schema = @Schema(implementation = Ticket.class)))
     }
     )
-     @GetMapping("usuario/{idUsuario}")
-    public ResponseEntity<?> getMembresiasPorUsuario(@PathVariable Long idUsuario) {
+     @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<?> getTicketByUser(@PathVariable Long idUsuario) {
     boolean existe = ticketService.validarUsuario(idUsuario);
     if (!existe) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario con ID " + idUsuario + " no existe.");
@@ -52,7 +51,20 @@ public class TicketController {
     if (tickets.isEmpty()) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("El usuario existe pero no tiene tickets asignados.");
     }
-    return ResponseEntity.ok(tickets);
+
+    List<EntityModel<Ticket>> ticketModels = tickets.stream().map(ticket -> {
+        EntityModel<Ticket> model = EntityModel.of(ticket);
+        model.add(linkTo(methodOn(TicketController.class).getIdTicket(ticket.getIdTicket())).withSelfRel());
+        model.add(linkTo(methodOn(TicketController.class).getEstadoDelTicket(ticket.getIdTicket())).withRel("estado"));
+        return model;
+    }).toList();
+
+    CollectionModel<EntityModel<Ticket>> collectionModel = CollectionModel.of(
+        ticketModels,
+        linkTo(methodOn(TicketController.class).getTicketByUser(idUsuario)).withSelfRel()
+    );
+
+    return ResponseEntity.ok(collectionModel);
 }
 
     @Operation( summary = "Este endpoint permite consultar el estado del ticket (Activo/Inactivo)" )
@@ -63,10 +75,14 @@ public class TicketController {
     }
     )
     @GetMapping("/estado/{idTicket}")
-    public ResponseEntity<String> getEstadoDelTicket(@PathVariable Long idTicket) {
+    public ResponseEntity<?> getEstadoDelTicket(@PathVariable Long idTicket) {
     try {
         String estado = ticketService.obtenerEstadoDelTicket(idTicket);
-        return ResponseEntity.ok(estado);
+        EntityModel<String> estadoModel = EntityModel.of(estado);
+        estadoModel.add(linkTo(methodOn(TicketController.class).getIdTicket(idTicket)).withRel("verTicket"));
+        estadoModel.add(linkTo(methodOn(TicketController.class).getAllTickets()).withRel("todos"));
+
+        return ResponseEntity.ok(estadoModel);
     } catch (EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (Exception e) {
@@ -100,8 +116,13 @@ public class TicketController {
                     return ResponseEntity.badRequest().body("El ID del motivo es requerido");
                 }
 
-                ticketService.createTicket(ticket);
-                return ResponseEntity.status(HttpStatus.CREATED).body("El ticket ha sido creado con exito");
+                 Ticket nuevoTicket = ticketService.createTicket(ticket);
+
+                EntityModel<Ticket> ticketModel = EntityModel.of(nuevoTicket);
+                ticketModel.add(linkTo(methodOn(TicketController.class).getIdTicket(nuevoTicket.getIdTicket())).withRel("ver"));
+                ticketModel.add(linkTo(methodOn(TicketController.class).getEstadoDelTicket(nuevoTicket.getIdTicket())).withRel("estado"));
+                ticketModel.add(linkTo(methodOn(TicketController.class).getAllTickets()).withRel("todos"));
+                return ResponseEntity.status(HttpStatus.CREATED).body(ticketModel);
             } catch (Exception e) {
                 return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
             }
@@ -115,15 +136,31 @@ public class TicketController {
         content = @Content(schema = @Schema(implementation = Ticket.class)))
          }
          )
-        @GetMapping("/listartks")
-        public ResponseEntity<List<Ticket>> getAllTickets() {
-            try {
-                return ResponseEntity.ok(ticketService.getAllTicket());
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
+       @GetMapping("/listartks")
+        public ResponseEntity<?> getAllTickets() {
+        try {
+        List<Ticket> tickets = ticketService.getAllTicket();
+        if (tickets.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        List<EntityModel<Ticket>> ticketModels = tickets.stream().map(ticket -> {
+            EntityModel<Ticket> model = EntityModel.of(ticket);
+            model.add(linkTo(methodOn(TicketController.class).getIdTicket(ticket.getIdTicket())).withRel("ver"));
+            model.add(linkTo(methodOn(TicketController.class).getEstadoDelTicket(ticket.getIdTicket())).withRel("estado"));
+            return model;
+        }).toList();
+
+        CollectionModel<EntityModel<Ticket>> collectionModel = CollectionModel.of(
+            ticketModels,
+            linkTo(methodOn(TicketController.class).getAllTickets()).withSelfRel()
+        );
+        return ResponseEntity.ok(collectionModel);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+}
+
 
         @Operation( summary = "Este endpoint permite listar los tickets por su ID" )
         @ApiResponses(value = { @ApiResponse(responseCode = "404",description = "NOT FOUND: Indica que el ticket no ha sido encontrado ",
@@ -134,16 +171,22 @@ public class TicketController {
          )
         @GetMapping("/listartkid/{idTicket}")
         public ResponseEntity<?> getIdTicket(@PathVariable Long idTicket) {
-            try {
-                Optional<Ticket> exist = ticketService.getById(idTicket); 
-                if(exist.isPresent()){
-                    return ResponseEntity.ok().body(exist.get());
-                }
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID "+idTicket+" no encontrado");
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
+        try {
+        Optional<Ticket> exist = ticketService.getById(idTicket);
+        if (exist.isPresent()) {
+            Ticket ticket = exist.get();
+            EntityModel<Ticket> model = EntityModel.of(ticket);
+            model.add(linkTo(methodOn(TicketController.class).getIdTicket(idTicket)).withSelfRel());
+            model.add(linkTo(methodOn(TicketController.class).getEstadoDelTicket(idTicket)).withRel("estado"));
+            model.add(linkTo(methodOn(TicketController.class).getAllTickets()).withRel("todos"));
+
+            return ResponseEntity.ok(model);
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID " + idTicket + " no encontrado");
+    } catch (Exception e) {
+        throw new RuntimeException(e.getMessage());
+    }
+}
     
 
 

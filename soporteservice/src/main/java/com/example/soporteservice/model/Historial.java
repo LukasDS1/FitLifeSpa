@@ -4,6 +4,8 @@ package com.example.soporteservice.model;
 
 import java.util.Date;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,16 +22,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 @Schema(description = "Este es el historial del motivo")
 @Entity
 @Table(name = "historial")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 
-public class Historial {
+public class Historial extends RepresentationModel<Historial>{
     @Schema(description = "Este es el ID unico del historial")
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -22,11 +22,16 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final RolRepository rolRepository;
 
-
+    /**
+     * 
+     * @param password es la contraseña que recibira el metodo
+     * @return devuelve la contraseña encriptada con encode
+     */
     public String encrypt(String password) {
         return passwordEncoder.encode(password);
     }
 
+   
     public List<Usuario> findAll(){
     List<Usuario> exist = usuarioRepository.findAll();
     if(exist.isEmpty()){

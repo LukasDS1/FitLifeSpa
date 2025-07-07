@@ -2,6 +2,8 @@ package com.example.membresia_service.model;
 
 import java.util.List;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "Modelos de plan")
@@ -24,8 +27,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor     
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
-public class Plan {
+@EqualsAndHashCode(callSuper = false)
+public class Plan extends RepresentationModel<Plan>{
 
     @Schema(description = "ID unico para el plan")
     @Id

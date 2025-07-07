@@ -15,7 +15,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,12 +50,33 @@ public class HistorialController {
 
         if (exist.isPresent()) {
             List<Historial> historiales = historialService.getHistorialesByTicketId(idTicket);
+            
 
             if (historiales.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
+            List<EntityModel<Historial>> historialModels = historiales.stream().map(historial -> {
+                EntityModel<Historial> model = EntityModel.of(historial);
 
-            return ResponseEntity.ok(historiales);
+                model.add(linkTo(methodOn(HistorialController.class)
+                    .getIdHistorial(historial.getIdHistorial())).withSelfRel());
+
+                model.add(linkTo(methodOn(HistorialController.class)
+                    .getAllHistorial()).withRel("todos"));
+
+                model.add(linkTo(methodOn(HistorialController.class)
+                    .getHistorialesByTicketId(idTicket)).withRel("por-ticket"));
+
+                return model;
+            }).toList();
+
+            CollectionModel<EntityModel<Historial>> collectionModel = CollectionModel.of(
+                historialModels,
+                linkTo(methodOn(HistorialController.class)
+                    .getHistorialesByTicketId(idTicket)).withSelfRel()
+            );
+
+            return ResponseEntity.ok(collectionModel);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket con ID: "+idTicket+" no encontrado");
     } catch (RuntimeException e) {
@@ -67,15 +91,32 @@ public class HistorialController {
     content = @Content(schema = @Schema(implementation = Historial.class)))
     }
     )
-    @GetMapping("/listarhistorial")
-    public ResponseEntity<List<Historial>> getAllHistorial() {
-        try {
-            return ResponseEntity.ok(historialService.getHistorial());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-     }
+   @GetMapping("/listarhistorial")
+public ResponseEntity<?> getAllHistorial() {
+    try {
+        List<Historial> historiales = historialService.getHistorial();
 
+        if (historiales.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<EntityModel<Historial>> historialModels = historiales.stream().map(historial -> {EntityModel<Historial> model = EntityModel.of(historial);
+            model.add(linkTo(methodOn(HistorialController.class)
+                .getIdHistorial(historial.getIdHistorial())).withRel("ver"));
+            model.add(linkTo(methodOn(HistorialController.class)
+                .getAllHistorial()).withSelfRel());
+            return model;
+        }).toList();
+
+        CollectionModel<EntityModel<Historial>> collectionModel = CollectionModel.of(
+            historialModels,
+            linkTo(methodOn(HistorialController.class).getAllHistorial()).withSelfRel()
+        );
+        return ResponseEntity.ok(collectionModel);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+}
 
     @Operation( summary = "Este endpoint permite listar los historiales por ID" )
     @ApiResponses(value = { @ApiResponse(responseCode = "404",description = "NOT FOUND: Indica quue no ha encontrado el historial  ",
@@ -85,9 +126,13 @@ public class HistorialController {
     }
     )
     @GetMapping("/listarhistorial/{idHistorial}")
-    public ResponseEntity<Historial> getIdHistorial(@PathVariable Long idHistorial) {
+    public ResponseEntity<?> getIdHistorial(@PathVariable Long idHistorial) {
         try {
-            return ResponseEntity.ok(historialService.getHistorialById(idHistorial));
+            Historial historial = historialService.getHistorialById(idHistorial);
+            EntityModel<Historial> model = EntityModel.of(historial);
+            model.add(linkTo(methodOn(HistorialController.class).getIdHistorial(idHistorial)).withSelfRel());
+            model.add(linkTo(methodOn(HistorialController.class).getAllHistorial()).withRel("todos"));
+            return ResponseEntity.ok(model);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
