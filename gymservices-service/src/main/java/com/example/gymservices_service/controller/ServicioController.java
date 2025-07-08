@@ -11,7 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
+
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +48,17 @@ public class ServicioController {
     @GetMapping("/listartodos")
     public ResponseEntity<List<Servicio>> allservices() {
         try {
-            return ResponseEntity.ok(servicioService.allServices());
+            List<Servicio> services = servicioService.allServices();
+
+            for (Servicio servicio : services) {
+                servicio.add(linkTo(methodOn(ServicioController.class).allservices()).withRel("listar-servicios"));
+                servicio.add(linkTo(methodOn(ServicioController.class).existsById(servicio.getIdServicio())).withRel("existe-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).createService(null)).withRel("crear-servicio"));
+                servicio.add(linkTo(methodOn(ServicioController.class).deleteById(servicio.getIdServicio())).withRel("eliminar-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).updateById(servicio.getIdServicio(), null)).withRel("actualizar-servicio"));
+            }
+
+            return ResponseEntity.ok(services);
         } catch (Exception e) {       
         return ResponseEntity.noContent().build();
         }
@@ -68,6 +84,11 @@ public class ServicioController {
         if (idServicio != null) {
             Servicio servicio = servicioService.serviceById(idServicio);
             if (servicio != null) {
+                servicio.add(linkTo(methodOn(ServicioController.class).allservices()).withRel("listar-servicios"));
+                servicio.add(linkTo(methodOn(ServicioController.class).existsById(servicio.getIdServicio())).withRel("existe-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).createService(null)).withRel("crear-servicio"));
+                servicio.add(linkTo(methodOn(ServicioController.class).deleteById(servicio.getIdServicio())).withRel("eliminar-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).updateById(servicio.getIdServicio(), null)).withRel("actualizar-servicio"));
                 return ResponseEntity.ok(servicio);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio con id " + idServicio + " no encontrado.");
@@ -90,6 +111,14 @@ public class ServicioController {
     public ResponseEntity<?> createService(@RequestBody Servicio serviceObject) {
         if (serviceObject != null) {
             servicioService.addService(serviceObject);
+            Servicio servicio = servicioService.serviceById(serviceObject.getIdServicio());
+
+            servicio.add(linkTo(methodOn(ServicioController.class).allservices()).withRel("listar-servicios"));
+            servicio.add(linkTo(methodOn(ServicioController.class).existsById(servicio.getIdServicio())).withRel("existe-por-id"));
+            servicio.add(linkTo(methodOn(ServicioController.class).createService(null)).withRel("crear-servicio"));
+            servicio.add(linkTo(methodOn(ServicioController.class).deleteById(servicio.getIdServicio())).withRel("eliminar-por-id"));
+            servicio.add(linkTo(methodOn(ServicioController.class).updateById(servicio.getIdServicio(), null)).withRel("actualizar-servicio"));
+
             return ResponseEntity.status(HttpStatus.CREATED).body(serviceObject);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al añadir el servicio");
@@ -112,7 +141,11 @@ public class ServicioController {
     public ResponseEntity<?> deleteById(@PathVariable Long idServicio) {
         if (idServicio != null) {
             if (servicioService.deleteService(idServicio)) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Servicio eliminado correctamente.");
+                EntityModel<String> response = EntityModel.of("Servicio eliminado correctamente.");
+                response.add(linkTo(methodOn(ServicioController.class).allservices()).withRel("listar-servicios"));
+                response.add(linkTo(methodOn(ServicioController.class).createService(null)).withRel("crear-servicio"));
+
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error al eliminar el servicio.");
         }
@@ -135,11 +168,17 @@ public class ServicioController {
             content = @Content(mediaType = "text/plain"))
     })
     @PutMapping("update/{idServicio}")
-    public ResponseEntity<?> putMethodName(@PathVariable Long idServicio, @RequestBody Servicio newServicio) {
+    public ResponseEntity<?> updateById(@PathVariable Long idServicio, @RequestBody Servicio newServicio) {
         if (idServicio != null && newServicio.getNombre() != null && newServicio.getDescripcion() != null &&
         !newServicio.getNombre().isEmpty() && !newServicio.getDescripcion().isEmpty()) {
             Servicio servicio = servicioService.updateService(idServicio, newServicio);
             if (servicio != null) {
+                servicio.add(linkTo(methodOn(ServicioController.class).allservices()).withRel("listar-servicios"));
+                servicio.add(linkTo(methodOn(ServicioController.class).existsById(servicio.getIdServicio())).withRel("existe-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).createService(null)).withRel("crear-servicio"));
+                servicio.add(linkTo(methodOn(ServicioController.class).deleteById(servicio.getIdServicio())).withRel("eliminar-por-id"));
+                servicio.add(linkTo(methodOn(ServicioController.class).updateById(servicio.getIdServicio(), null)).withRel("actualizar-servicio"));
+
                 return ResponseEntity.status(HttpStatus.OK).body(servicio);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio no encontrado.");

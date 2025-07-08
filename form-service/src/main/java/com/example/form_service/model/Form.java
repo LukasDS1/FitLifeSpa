@@ -1,5 +1,7 @@
 package com.example.form_service.model;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,15 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "Entidad que representa el formulario contacto del usuario")
 @Entity
 @Table(name = "form")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Form {
+public class Form extends RepresentationModel<Form> {
 
     @Schema(description = "ID único del formulario")
     @Id

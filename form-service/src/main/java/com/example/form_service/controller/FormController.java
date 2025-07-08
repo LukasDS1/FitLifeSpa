@@ -2,6 +2,7 @@ package com.example.form_service.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import com.example.form_service.model.Form;
 import com.example.form_service.service.FormService;
@@ -42,10 +43,16 @@ public class FormController {
             content = @Content(schema = @Schema(type = "string", example = "Ha ocurrido una excepción al crear el formulario.")))
     })
     @PostMapping("/post")
-    public ResponseEntity<String> saveForm(@RequestBody Form form) {
+    public ResponseEntity<?> saveForm(@RequestBody Form form) {
         try {
             if (formService.saveForm(form)) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("formulario creado con éxito.");
+                Form savedForm = formService.getFormId(form.getIdFormulario());
+
+                savedForm.add(linkTo(methodOn(FormController.class).getFormById(savedForm.getIdFormulario())).withRel("buscar-form-por-id"));
+                savedForm.add(linkTo(methodOn(FormController.class).getForms()).withRel("listar-formularios"));
+                savedForm.add(linkTo(methodOn(FormController.class).saveForm(null)).withRel("crear-formulario"));
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
+                
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al crear el formulario");
         } catch (Exception e) {
@@ -63,9 +70,15 @@ public class FormController {
     @GetMapping
     public ResponseEntity<List<Form>> getForms() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(formService.getForm());
+            List<Form> forms = formService.getForm();
+            for (Form form : forms) {
+                form.add(linkTo(methodOn(FormController.class).getFormById(form.getIdFormulario())).withRel("buscar-form-por-id"));
+                form.add(linkTo(methodOn(FormController.class).getForms()).withRel("listar-formularios"));
+                form.add(linkTo(methodOn(FormController.class).saveForm(null)).withRel("crear-formulario"));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(forms);
         } catch (Exception e) {
-            throw new RuntimeException("Error al conseguir todos los formularios.");
+            throw new RuntimeException("No hay formularios.");
         }
     }
     
@@ -85,7 +98,12 @@ public class FormController {
     public ResponseEntity<Form> getFormById(@PathVariable Long idForm) {
         try {
             if (idForm != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(formService.getFormId(idForm));
+                Form form = formService.getFormId(idForm);
+                form.add(linkTo(methodOn(FormController.class).getFormById(form.getIdFormulario())).withRel("buscar-form-por-id"));
+                form.add(linkTo(methodOn(FormController.class).getForms()).withRel("listar-formularios"));
+                form.add(linkTo(methodOn(FormController.class).saveForm(null)).withRel("crear-formulario"));
+
+                return ResponseEntity.status(HttpStatus.OK).body(form);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {

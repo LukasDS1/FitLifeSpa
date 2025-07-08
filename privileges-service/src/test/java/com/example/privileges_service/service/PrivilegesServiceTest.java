@@ -2,6 +2,7 @@ package com.example.privileges_service.service;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,6 @@ public class PrivilegesServiceTest {
     @InjectMocks
     private PrivilegesService privilegesService;
 
-
     @Test
     void allPrivileges_returnsAllFromRepository() {
         List<Privileges> list = List.of(new Privileges(), new Privileges());
@@ -51,7 +51,7 @@ public class PrivilegesServiceTest {
         when(privRepository.findAll()).thenReturn(list);
 
         List<Privileges> result = privilegesService.allPrivileges();
-
+        
         assertThat(result).isEqualTo(list);
         verify(privRepository).findAll();
     }

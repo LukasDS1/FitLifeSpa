@@ -2,6 +2,8 @@ package com.example.clase_service.model;
 
 import java.util.Date;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,15 +15,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "Representa una clase agendada que ofrece el gimnasio")
 @Entity
 @Table(name = "clase")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Clase {
+public class Clase extends RepresentationModel<Clase> {
 
     @Schema(description = "Identificador único de la clase")
     @Id

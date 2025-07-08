@@ -11,6 +11,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +46,17 @@ public class UsuarioController {
     public ResponseEntity<?> validateUsuario(@RequestBody Usuario usuario) {
         try {
             if(usuarioService.validateUser(usuario.getEmail(), usuario.getPassword())){
-            return ResponseEntity.accepted().body("Usuario ingresado con éxito: "+ usuario.getEmail()+ " ¡Bienvenido a FitLife Spa!");
+
+                Map<String, Object> response = new LinkedHashMap<>();
+
+                response.put("self", "http://localhost:8083/api-v1/login");
+                response.put("crear-formulario", "http://localhost:8092/api-v1/form/post");
+                response.put("crear-servicio", "http://localhost:8085/api-v1/service/add");
+                response.put("crear-clase", "http://localhost:8088/api-v1/clase/crear");
+                response.put("crear-inscripcion", "http://localhost:8089/api-v1/inscripciones");
+                response.put("crear-membresia", "http://localhost:8086/api-v1/membresia/crearmembresia");
+                response.put("crear-reserva", "http://localhost:8087/api-v1/reservas/add");
+                return ResponseEntity.accepted().body(response);
 
             }
             return ResponseEntity.badRequest().body("Error: Email o contraseña incorrectas");

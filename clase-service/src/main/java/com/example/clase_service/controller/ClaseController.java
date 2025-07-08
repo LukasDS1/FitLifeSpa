@@ -1,8 +1,14 @@
 package com.example.clase_service.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +49,15 @@ public class ClaseController {
     @GetMapping("/listar")
     public ResponseEntity<List<Clase>> getAllClass() {
         try {
+            List<Clase> clases = claseService.getAllClases();
+            for (Clase clase : clases) {
+                clase.add(linkTo(methodOn(ClaseController.class).getAllClass()).withRel("listar-clases"));
+                clase.add(linkTo(methodOn(ClaseController.class).createClass(null)).withRel("crear-clase"));
+                clase.add(linkTo(methodOn(ClaseController.class).getClaseById(clase.getIdClase())).withRel("buscar-clase-por-id"));
+                clase.add(linkTo(methodOn(ClaseController.class).deleteClaseById(clase.getIdClase())).withRel("borrar-clase-por-id"));
+                clase.add(linkTo(methodOn(ClaseController.class).updateClass(null)).withRel("actualizar-clase"));
+                clase.add(linkTo(methodOn(ClaseController.class).getServicioDeClase(clase.getIdClase())).withRel("conseguir-servicio-de-clase"));
+            }
             return ResponseEntity.ok(claseService.getAllClases());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -60,10 +75,20 @@ public class ClaseController {
             description = "Error al crear la clase")
     })
     @PostMapping("/crear")
-    public ResponseEntity<String> createClass(@RequestBody Clase clase) {
+    public ResponseEntity<?> createClass(@RequestBody Clase clase) {
         try {
             claseService.saveClase(clase);
-            return ResponseEntity.ok().body("clase creada correctamente.");
+
+            Clase savedClase = claseService.getClaseById(clase.getIdClase()).get();
+
+            savedClase.add(linkTo(methodOn(ClaseController.class).getAllClass()).withRel("listar-clases"));
+            savedClase.add(linkTo(methodOn(ClaseController.class).createClass(null)).withRel("crear-clase"));
+            savedClase.add(linkTo(methodOn(ClaseController.class).getClaseById(clase.getIdClase())).withRel("buscar-clase-por-id"));
+            savedClase.add(linkTo(methodOn(ClaseController.class).deleteClaseById(clase.getIdClase())).withRel("borrar-clase-por-id"));
+            savedClase.add(linkTo(methodOn(ClaseController.class).updateClass(null)).withRel("actualizar-clase"));
+            savedClase.add(linkTo(methodOn(ClaseController.class).getServicioDeClase(clase.getIdClase())).withRel("conseguir-servicio-de-clase"));
+
+            return ResponseEntity.ok().body(savedClase);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al crear la clase.");
         }
@@ -88,6 +113,15 @@ public class ClaseController {
         try {
             Optional<Clase> exist = claseService.getClaseById(idClase);
             if (exist.isPresent()) {
+                Clase clase = claseService.getClaseById(idClase).get();
+
+                clase.add(linkTo(methodOn(ClaseController.class).getAllClass()).withRel("listar-clases"));
+                clase.add(linkTo(methodOn(ClaseController.class).createClass(null)).withRel("crear-clase"));
+                clase.add(linkTo(methodOn(ClaseController.class).getClaseById(clase.getIdClase())).withRel("buscar-clase-por-id"));
+                clase.add(linkTo(methodOn(ClaseController.class).deleteClaseById(clase.getIdClase())).withRel("borrar-clase-por-id"));
+                clase.add(linkTo(methodOn(ClaseController.class).updateClass(null)).withRel("actualizar-clase"));
+                clase.add(linkTo(methodOn(ClaseController.class).getServicioDeClase(clase.getIdClase())).withRel("conseguir-servicio-de-clase"));
+
                 return ResponseEntity.ok(exist.get());
             }
             return ResponseEntity.notFound().build();
@@ -110,12 +144,17 @@ public class ClaseController {
             description = "Error al eliminar clase")
     })
     @DeleteMapping("/borrar/{idClase}")
-    public ResponseEntity<String> deleteClaseById(@PathVariable Long idClase) { 
+    public ResponseEntity<EntityModel<String>> deleteClaseById(@PathVariable Long idClase) { 
         try {
             Optional<Clase> exist = claseService.getClaseById(idClase);
             if (exist.isPresent()) {
                 claseService.deleteClase(idClase);
-                return ResponseEntity.ok().body("Clase con ID: " + idClase + " Ha sido borrada con exito");
+
+                EntityModel<String> response = EntityModel.of("Clase con ID: " + idClase + " Ha sido borrada con exito");
+                response.add(linkTo(methodOn(ClaseController.class).getAllClass()).withRel("listar-clases"));
+                response.add(linkTo(methodOn(ClaseController.class).createClass(null)).withRel("crear-clase"));
+                
+                return ResponseEntity.ok().body(response);
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -142,6 +181,15 @@ public class ClaseController {
             Optional<Clase> exist = claseService.getClaseById(clase.getIdClase());
             if (exist.isPresent()) {
             claseService.updateClase(clase.getIdClase(), clase);
+            Clase updatedClase = exist.get();
+
+            updatedClase.add(linkTo(methodOn(ClaseController.class).getAllClass()).withRel("listar-clases"));
+            updatedClase.add(linkTo(methodOn(ClaseController.class).createClass(null)).withRel("crear-clase"));
+            updatedClase.add(linkTo(methodOn(ClaseController.class).getClaseById(clase.getIdClase())).withRel("buscar-clase-por-id"));
+            updatedClase.add(linkTo(methodOn(ClaseController.class).deleteClaseById(clase.getIdClase())).withRel("borrar-clase-por-id"));
+            updatedClase.add(linkTo(methodOn(ClaseController.class).updateClass(null)).withRel("actualizar-clase"));
+            updatedClase.add(linkTo(methodOn(ClaseController.class).getServicioDeClase(clase.getIdClase())).withRel("conseguir-servicio-de-clase")); 
+
             return ResponseEntity.ok().body("Clase con ID: " + clase.getIdClase() + " actualizada con exito");
             }
             return ResponseEntity.badRequest().body("Parametros no pueden ser nulos");
@@ -164,6 +212,12 @@ public class ClaseController {
     @GetMapping("/servicio/{idClase}")
     public ResponseEntity<Map<String, Object>> getServicioDeClase(@PathVariable Long idClase) {
         Map<String, Object> servicio = claseService.obtenerServicioDeClase(idClase);
+        
+        Map<String, Object> links = new LinkedHashMap<>();
+        links.put("conseguir-servicio-de-clase", linkTo(methodOn(ClaseController.class).getServicioDeClase(idClase)).toUri().toString());
+        links.put("buscar-clase-por-id", linkTo(methodOn(ClaseController.class).getClaseById(idClase)).toUri().toString());
+        links.put("listar-clases", linkTo(methodOn(ClaseController.class).getAllClass()).toUri().toString());
+
         return ResponseEntity.ok(servicio);
     }
 }
