@@ -2,6 +2,8 @@ package com.example.reserva_service.model;
 
 import java.util.Date;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -16,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Table(name = "estadoReserva")
@@ -23,8 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Schema(description = "El estado de la reserva, detalla la informacion de la reserva")
-public class EstadoReserva {
+public class EstadoReserva extends RepresentationModel<EstadoReserva>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Id unico del estado de la reserva")

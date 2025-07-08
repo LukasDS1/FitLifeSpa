@@ -58,7 +58,7 @@ class PrivilegesControllerTest {
 
         mockMvc.perform(get("/api/v1/privilegios/total"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
+            .andExpect(jsonPath("$._embedded.privilegesList").isArray());
     }
 
 
@@ -81,7 +81,7 @@ class PrivilegesControllerTest {
 
         mockMvc.perform(get("/api/v1/privilegios/rol/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
+            .andExpect(jsonPath("$._embedded.privilegesList").isArray());
     }
 
 
@@ -92,7 +92,7 @@ class PrivilegesControllerTest {
 
         mockMvc.perform(get("/api/v1/privilegios/estado/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
+            .andExpect(jsonPath("$._embedded.privilegesList").isArray());
     }
 
     @Test

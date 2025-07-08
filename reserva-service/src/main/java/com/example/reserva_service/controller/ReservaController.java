@@ -26,6 +26,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 @RequestMapping("/api-v1/reservas")
 @RequiredArgsConstructor
@@ -40,12 +42,17 @@ public class ReservaController {
         @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping
-    public ResponseEntity<List<Reserva>> findAll(){
-        List<Reserva> lista = reservaService.listarReservas();
-        if (lista.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(lista);
+    public ResponseEntity<List<Reserva>> findAll() {
+        List<Reserva> reservas = reservaService.listarReservas();
+        if (reservas.isEmpty()) return ResponseEntity.noContent().build();
+
+        reservas.forEach(reserva -> reserva.add(
+            linkTo(methodOn(ReservaController.class).findByIdReserva(reserva.getIdReserva())).withSelfRel(),
+            linkTo(methodOn(ReservaController.class).deleteReserva(reserva.getIdReserva())).withRel("eliminar"),
+            linkTo(methodOn(ReservaController.class).findAll()).withRel("todas")
+        ));
+
+        return ResponseEntity.ok(reservas);
     }
 
     @Operation(summary = "Permite obtener una Reserva mediante su ID unica")
@@ -53,12 +60,17 @@ public class ReservaController {
         @ApiResponse(responseCode ="200", description = "Genera una Reserva que fue buscada por su ID", content = @Content(schema = @Schema(implementation = Reserva.class))),
         @ApiResponse(responseCode = "404", description = "No devolvera nada ya que no encontro una Reserva con esa ID")
     } )
-    @GetMapping("/{id}")
-    public ResponseEntity<Reserva> findByIdReserva(@PathVariable Long id){
+     @GetMapping("/{id}")
+    public ResponseEntity<Reserva> findByIdReserva(@PathVariable Long id) {
         Reserva reserva = reservaService.buscarPorId(id);
-        if (reserva == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (reserva == null) return ResponseEntity.notFound().build();
+
+        reserva.add(
+            linkTo(methodOn(ReservaController.class).findByIdReserva(id)).withSelfRel(),
+            linkTo(methodOn(ReservaController.class).findAll()).withRel("todas"),
+            linkTo(methodOn(ReservaController.class).deleteReserva(id)).withRel("eliminar")
+        );
+
         return ResponseEntity.ok(reserva);
     }
 
@@ -69,11 +81,15 @@ public class ReservaController {
         @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<List<Reserva>> findByidUser(@PathVariable Long id){
+    public ResponseEntity<List<Reserva>> findByidUser(@PathVariable Long id) {
         List<Reserva> reservas = reservaService.listarPorIdUser(id);
-        if (reservas.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+        if (reservas.isEmpty()) return ResponseEntity.noContent().build();
+
+        reservas.forEach(reserva -> reserva.add(
+            linkTo(methodOn(ReservaController.class).findByIdReserva(reserva.getIdReserva())).withSelfRel(),
+            linkTo(methodOn(ReservaController.class).findAll()).withRel("Todas las reservas")
+        ));
+
         return ResponseEntity.ok(reservas);
     }
 
@@ -83,11 +99,15 @@ public class ReservaController {
         @ApiResponse(responseCode = "400", description = "En caso de un error o ya existir la reserva, devolvera BadRequest")
     } )
     @PostMapping("/add")
-    public ResponseEntity<?> addReserva(@RequestBody Reserva reserva) {
+    public ResponseEntity<Reserva> addReserva(@RequestBody Reserva reserva) {
         Reserva reserva1 = reservaService.agregarReserva(reserva);
-        if (reserva1 == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (reserva1 == null) return ResponseEntity.badRequest().build();
+
+        reserva1.add(
+            linkTo(methodOn(ReservaController.class).findByIdReserva(reserva1.getIdReserva())).withSelfRel(),
+            linkTo(methodOn(ReservaController.class).findAll()).withRel("todas las reservas")
+        );
+
         return ResponseEntity.status(HttpStatus.CREATED).body(reserva1);
     }
 
@@ -97,12 +117,11 @@ public class ReservaController {
         @ApiResponse(responseCode = "400", description = "En caso de error arrojara Bad Request")
     } )
     @PutMapping("/update/{id}")
-    public ResponseEntity<Reserva> updateReserva(@RequestBody Reserva reserva, @PathVariable Long id){
+    public ResponseEntity<Reserva> updateReserva(@RequestBody Reserva reserva, @PathVariable Long id) {
         try {
             Reserva reserva1 = reservaService.buscarPorId(id);
-            if (reserva1 == null) {
-                return ResponseEntity.notFound().build();
-            }
+            if (reserva1 == null) return ResponseEntity.notFound().build();
+
             reserva1.setDescripcion(reserva.getDescripcion());
             reserva1.setFechaContrato(reserva.getFechaContrato());
             reserva1.setFechaReserva(reserva.getFechaReserva());
@@ -112,10 +131,13 @@ public class ReservaController {
             reserva1.setEstadoReservas(reserva.getEstadoReservas());
             reservaService.agregarReserva(reserva1);
 
-            return ResponseEntity.ok(reserva1);
+            reserva1.add(
+                linkTo(methodOn(ReservaController.class).findByIdReserva(id)).withSelfRel(),
+                linkTo(methodOn(ReservaController.class).findAll()).withRel("todas las reservas")
+            );
 
+            return ResponseEntity.ok(reserva1);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }
@@ -159,9 +181,12 @@ public class ReservaController {
     @GetMapping("/estados")
     public ResponseEntity<List<EstadoReserva>> listarTodos() {
         List<EstadoReserva> estados = estadoReservaService.listarTodo();
-        if (estados.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+        if (estados.isEmpty()) return ResponseEntity.noContent().build();
+
+        estados.forEach(est -> est.add(
+            linkTo(methodOn(ReservaController.class).obtenerEstadoPorId(est.getIdEstadoReserva())).withSelfRel()
+        ));
+
         return ResponseEntity.ok(estados);
     }
 
@@ -175,6 +200,10 @@ public class ReservaController {
     public ResponseEntity<EstadoReserva> obtenerEstadoPorId(@PathVariable Long id) {
         try {
             EstadoReserva estado = estadoReservaService.listarPorId(id);
+            estado.add(
+                linkTo(methodOn(ReservaController.class).obtenerEstadoPorId(id)).withSelfRel(),
+                linkTo(methodOn(ReservaController.class).listarTodos()).withRel("todos los estados")
+            );
             return ResponseEntity.ok(estado);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -190,6 +219,10 @@ public class ReservaController {
     public ResponseEntity<EstadoReserva> agregarEstadoReserva(@RequestBody EstadoReserva estado) {
         EstadoReserva nuevoEstado = estadoReservaService.agregarEstadoReserva(estado);
         if (nuevoEstado != null) {
+            nuevoEstado.add(
+                linkTo(methodOn(ReservaController.class).obtenerEstadoPorId(nuevoEstado.getIdEstadoReserva())).withSelfRel(),
+                linkTo(methodOn(ReservaController.class).listarTodos()).withRel("todos los estados")
+            );
             return ResponseEntity.ok(nuevoEstado);
         } else {
             return ResponseEntity.badRequest().build();

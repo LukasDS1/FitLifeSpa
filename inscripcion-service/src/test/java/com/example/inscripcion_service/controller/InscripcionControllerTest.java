@@ -37,10 +37,7 @@ public class InscripcionControllerTest {
     @MockitoBean
     private InscripcionService inscriService;
 
-  
-
     
-
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Test
     void allInscripciones_returnsOkWithList() throws Exception {

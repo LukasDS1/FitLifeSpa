@@ -1,5 +1,7 @@
 package com.example.privileges_service.model;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,15 +15,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "privilegio")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data   
+@Data 
+@EqualsAndHashCode(callSuper = false)
 @Schema(description = "Los privilegios de FitLifeSPA")
-public class Privileges {
+public class Privileges extends RepresentationModel<Privileges> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "ID unico de privilegio")

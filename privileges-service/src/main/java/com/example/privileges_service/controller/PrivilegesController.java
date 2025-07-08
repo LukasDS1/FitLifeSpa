@@ -2,6 +2,9 @@ package com.example.privileges_service.controller;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,12 +51,14 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "204", description = "no devolvera nada ya que la lista esta vacia.")
     } )
     @GetMapping("/total")
-    public ResponseEntity<List<Privileges>> listPrivileges(){
-        List<Privileges> privi = privilegesService.allPrivileges();
-        if (privi.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(privi);
+    public ResponseEntity<CollectionModel<Privileges>> listPrivileges() {
+        List<Privileges> lista = privilegesService.allPrivileges();
+        if (lista.isEmpty()) return ResponseEntity.noContent().build();
+
+        lista.forEach(priv -> priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(priv.getIdPrivilege())).withSelfRel()));
+
+        return ResponseEntity.ok(CollectionModel.of(lista,
+            linkTo(methodOn(PrivilegesController.class).listPrivileges()).withSelfRel()));
     }
 
     @Operation(summary = "Agrega un nuevo privilegio")
@@ -65,12 +70,18 @@ public class PrivilegesController {
     public ResponseEntity<Privileges> addPrivilege(@RequestBody Privileges privi) {
         try {
             privilegesService.addPrivileges(privi);
+
+            privi.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(privi.getIdPrivilege())).withSelfRel());
+            privi.add(linkTo(methodOn(PrivilegesController.class).deletePrivilege(privi.getIdPrivilege())).withRel("eliminar"));
+            privi.add(linkTo(methodOn(PrivilegesController.class).toggleActivo(privi.getIdPrivilege(), true)).withRel("toggleActivo"));
+
+
             return ResponseEntity.status(HttpStatus.CREATED).body(privi);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }
+
     
     @Operation(summary = "Lista los privilegios según el rol")
     @ApiResponses({
@@ -78,12 +89,14 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "204", description = "No se encontraron privilegios para el rol")
     })
     @GetMapping("/rol/{id}")
-    public ResponseEntity<List<Privileges>> listByRol(@PathVariable Long id){
-        List<Privileges> priv = privilegesService.findPrivilegesByRol(id);
-        if (priv.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(priv);
+    public ResponseEntity<CollectionModel<Privileges>> listByRol(@PathVariable Long id) {
+        List<Privileges> lista = privilegesService.findPrivilegesByRol(id);
+        if (lista.isEmpty()) return ResponseEntity.noContent().build();
+
+        lista.forEach(priv -> priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(priv.getIdPrivilege())).withSelfRel()));
+
+        return ResponseEntity.ok(CollectionModel.of(lista,
+            linkTo(methodOn(PrivilegesController.class).listByRol(id)).withSelfRel()));
     }
     
     @Operation(summary = "Lista los privilegios según el estado")
@@ -92,12 +105,14 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "204", description = "No se encontraron privilegios para el estado")
     })
     @GetMapping("/estado/{id}")
-    public ResponseEntity<List<Privileges>> listByEstado(@PathVariable Long id){
-        List<Privileges> priv = privilegesService.findPrivilegeByEstado(id);
-        if (priv.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(priv);
+    public ResponseEntity<CollectionModel<Privileges>> listByEstado(@PathVariable Long id) {
+        List<Privileges> lista = privilegesService.findPrivilegeByEstado(id);
+        if (lista.isEmpty()) return ResponseEntity.noContent().build();
+
+        lista.forEach(priv -> priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(priv.getIdPrivilege())).withSelfRel()));
+
+        return ResponseEntity.ok(CollectionModel.of(lista,
+            linkTo(methodOn(PrivilegesController.class).listByEstado(id)).withSelfRel()));
     }
 
     @Operation(summary = "Lista los privilegios según el módulo")
@@ -106,15 +121,17 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "204", description = "No se encontraron privilegios para el módulo")
     })
     @GetMapping("/modulo/{id}")
-    public ResponseEntity<List<Privileges>> listByModulo(@PathVariable Long id){
-        List<Privileges> priv = privilegesService.findPrivilegesByModulo(id);
-        if (priv.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(priv);
+    public ResponseEntity<CollectionModel<Privileges>> listByModulo(@PathVariable Long id) {
+        List<Privileges> lista = privilegesService.findPrivilegesByModulo(id);
+        if (lista.isEmpty()) return ResponseEntity.noContent().build();
+
+        lista.forEach(priv -> priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(priv.getIdPrivilege())).withSelfRel()));
+
+        return ResponseEntity.ok(CollectionModel.of(lista,
+            linkTo(methodOn(PrivilegesController.class).listByModulo(id)).withSelfRel()));
     }
 
-     @Operation(summary = "Elimina un privilegio por su ID")
+    @Operation(summary = "Elimina un privilegio por su ID")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Privilegio eliminado correctamente"),
         @ApiResponse(responseCode = "404", description = "Privilegio no encontrado")
@@ -137,9 +154,11 @@ public class PrivilegesController {
     public ResponseEntity<Privileges> findbyIdprivilege(@PathVariable Long id) {
         try {
             Privileges priv = privilegesService.findPrivById(id);
+            priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(id)).withSelfRel());
+            priv.add(linkTo(methodOn(PrivilegesController.class).deletePrivilege(priv.getIdPrivilege())).withRel("eliminar"));
+            priv.add(linkTo(methodOn(PrivilegesController.class).toggleActivo(priv.getIdPrivilege(), true)).withRel("toggleActivo"));
             return ResponseEntity.ok(priv);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.notFound().build();
         }
     }
@@ -150,9 +169,13 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "404", description = "Rol no encontrado")
     })
     @GetMapping("/findRol/{id}")
-    public ResponseEntity<Rol> findRol(@PathVariable Long id){
+     public ResponseEntity<Rol> findRol(@PathVariable Long id) {
         Rol rol = rolService.validarRol(id);
         if (rol != null) {
+
+            rol.add(linkTo(methodOn(PrivilegesController.class).findRol(rol.getIdRol())).withSelfRel());
+            rol.add(linkTo(methodOn(PrivilegesController.class).updateRol(rol.getIdRol(), rol)).withRel("actualizar"));
+
             return ResponseEntity.ok(rol);
         }
         return ResponseEntity.notFound().build();
@@ -164,12 +187,13 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "400", description = "Hubo un error en el cuerpo")
     })
     @PostMapping("/addRol")
-    public ResponseEntity<Rol> addRol(@RequestBody Rol rol){
+    public ResponseEntity<Rol> addRol(@RequestBody Rol rol) {
         try {
             rolService.AgregarRol(rol);
+            rol.add(linkTo(methodOn(PrivilegesController.class).findRol(rol.getIdRol())).withSelfRel());
+            rol.add(linkTo(methodOn(PrivilegesController.class).updateRol(rol.getIdRol(), rol)).withRel("actualizar"));
             return ResponseEntity.status(HttpStatus.CREATED).body(rol);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }
@@ -180,9 +204,10 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "404", description = "Estado no encontrado")
     })
     @GetMapping("/findEstado/{id}")
-    public ResponseEntity<Estado> findEstado(@PathVariable Long id){
+    public ResponseEntity<Estado> findEstado(@PathVariable Long id) {
         Estado estado = estadoService.validarEstado(id);
         if (estado != null) {
+            estado.add(linkTo(methodOn(PrivilegesController.class).findEstado(id)).withSelfRel());
             return ResponseEntity.ok(estado);
         }
         return ResponseEntity.notFound().build();
@@ -194,25 +219,25 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "400", description = "Hubo error con el cuerpo")
     })
     @PostMapping("/addEstado")
-    public ResponseEntity<Estado> addEstado(@RequestBody Estado estado){
+    public ResponseEntity<Estado> addEstado(@RequestBody Estado estado) {
         try {
             estadoService.agregarEstado(estado);
+            estado.add(linkTo(methodOn(PrivilegesController.class).findEstado(estado.getIdEstado())).withSelfRel());
             return ResponseEntity.status(HttpStatus.CREATED).body(estado);
         } catch (Exception e) {
-            // TODO: handle exception
             return ResponseEntity.badRequest().build();
         }
     }
-
     @Operation(summary = "Busca un modulo por su ID")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Modulo encontrado", content = @Content(schema = @Schema(implementation = Modulo.class))),
         @ApiResponse(responseCode = "404", description = "Modulo no encontrado")
     })
     @GetMapping("/findModulo/{id}")
-    public ResponseEntity<Modulo> findModulo(@PathVariable Long id){
+    public ResponseEntity<Modulo> findModulo(@PathVariable Long id) {
         Modulo modulo = moduloService.validarModulo(id);
         if (modulo != null) {
+            modulo.add(linkTo(methodOn(PrivilegesController.class).findModulo(id)).withSelfRel());
             return ResponseEntity.ok(modulo);
         }
         return ResponseEntity.notFound().build();
@@ -224,9 +249,10 @@ public class PrivilegesController {
         @ApiResponse(responseCode = "400", description = "Hubo error en el cuerpo")
     })
     @PostMapping("/addModulo")
-    public ResponseEntity<Modulo> addModulo(@RequestBody Modulo modulo){
+    public ResponseEntity<Modulo> addModulo(@RequestBody Modulo modulo) {
         try {
             moduloService.agregarModulo(modulo);
+            modulo.add(linkTo(methodOn(PrivilegesController.class).findModulo(modulo.getIdModulo())).withSelfRel());
             return ResponseEntity.status(HttpStatus.CREATED).body(modulo);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -243,15 +269,19 @@ public class PrivilegesController {
         Rol rolExistente = rolService.validarRol(id);
 
         if (rolExistente != null) {
-            // Actualiza los campos necesarios
             rolExistente.setNombre(rolActualizado.getNombre());
             rolExistente.setPrivilegios(rolActualizado.getPrivilegios());
+
             Rol rolGuardado = rolService.AgregarRol(rolExistente);
+
+            rolGuardado.add(linkTo(methodOn(PrivilegesController.class).findRol(id)).withSelfRel());
+
             return ResponseEntity.ok(rolGuardado);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @Operation(summary = "Activa o desactiva un privilegio")
     @ApiResponses({
@@ -263,10 +293,14 @@ public class PrivilegesController {
         try {
             Privileges priv = privilegesService.findPrivById(id);
             priv.setActivo(estado);
-            privilegesService.addPrivileges(priv); 
+            privilegesService.addPrivileges(priv);
+
+            priv.add(linkTo(methodOn(PrivilegesController.class).findbyIdprivilege(id)).withSelfRel());
+
             return ResponseEntity.ok(priv);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
